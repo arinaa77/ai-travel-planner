@@ -36,6 +36,10 @@ Generates personalized travel itineraries using a parallel multi-agent architect
 
 ---
 
+## Architecture Diagram
+
+![Architecture](docs/architecture.jpg)
+
 ## Project Structure
 
 ```
