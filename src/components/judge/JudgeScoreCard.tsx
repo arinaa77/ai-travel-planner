@@ -1,4 +1,5 @@
 import { JudgeEvaluation } from "@/lib/mockData";
+import ScoreBar from "./ScoreBar";
 
 interface Props {
   evaluation: JudgeEvaluation;
@@ -13,10 +14,7 @@ export default function JudgeScoreCard({ evaluation }: Props) {
         <div key={s.dimension}>
           <span>{s.dimension}</span>
           <span>{s.score}</span>
-          <div
-            data-testid="score-bar"
-            style={{ width: `${s.score}%` }}
-          />
+          <ScoreBar score={s.score} />
         </div>
       ))}
     </div>
