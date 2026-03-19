@@ -158,6 +158,22 @@ Agent id → AccentConfig lookup map (avoids conditional chains in JSX):
 
 ---
 
+## Implementation
+
+**Files created/modified:**
+- `src/components/debate/AgentDebatePanel.tsx` — new component (single file with `StatusBadge`, `AgentCard`, `AgentDebatePanel`)
+- `src/app/page.tsx` — added `AgentDebatePanel` below `TripInputForm`, widened container from `max-w-2xl` to `max-w-5xl`
+
+**What was built:**
+- `AgentDebatePanel` accepts `agents: AgentOutput[]` and renders a `sm:grid-cols-3` grid of cards
+- Each `AgentCard` has a `border-t-4` accent color (violet/orange/emerald), agent name, `StatusBadge`, and item list
+- Last item in each card renders with bold label + accent-colored value (matching the "Total" row in the sample design)
+- `StatusBadge` shows a colored dot + status text; `running` state pulses and shows skeleton rows when `items` is empty
+- Error state swaps the item list for a plain error message and adds a red ring to the card
+- `MOCK_AGENT_OUTPUTS` passed in from `src/lib/mockData` for development
+
+---
+
 ## Decisions Made
 
 | Decision | Rationale |
