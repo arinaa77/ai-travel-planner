@@ -81,6 +81,83 @@ interface AgentOutput {
 
 ---
 
+## Plan
+
+### Sub-components (single file)
+Three internal components, one default export — no barrel file needed.
+
+```
+AgentDebatePanel        ← default export; receives agents: AgentOutput[]
+  AgentCard             ← internal; one card per agent
+    StatusBadge         ← internal; renders status text + dot indicator
+```
+
+### Props interface
+```typescript
+// Public
+interface AgentDebatePanelProps {
+  agents: AgentOutput[];
+}
+
+// Internal lookup type
+interface AccentConfig {
+  border: string;   // e.g. "border-t-violet-500"  — top border color
+  dot: string;      // e.g. "bg-violet-500"         — status dot
+  value: string;    // e.g. "text-violet-600"        — accent value color (e.g. Total row)
+  done: string;     // e.g. "text-emerald-500"       — "Done" status text color
+}
+```
+
+Agent id → AccentConfig lookup map (avoids conditional chains in JSX):
+| id | border | accent |
+|---|---|---|
+| `budget` | `border-t-violet-500` | violet |
+| `attractions` | `border-t-orange-500` | orange |
+| `food` | `border-t-emerald-500` | emerald |
+| fallback | `border-t-gray-400` | gray |
+
+### Card layout (informed by sample design)
+```
+<div> white card, border, rounded-xl, border-t-4 in accent color
+  ├── header row (flex justify-between, py-4 px-5)
+  │   ├── <h3> agent.name  — font-semibold text-gray-800
+  │   └── <StatusBadge>    — small dot + colored status text
+  └── item list (px-5 pb-4, divide-y divide-gray-100)
+      └── per item (flex justify-between py-2.5)
+          ├── label  — text-sm text-gray-400
+          └── value  — text-sm font-semibold text-gray-800
+              (last item / "Total": accent color instead of gray-800)
+```
+
+### Status variants
+| Status | Dot | Text | Card modifier |
+|---|---|---|---|
+| `idle` | `bg-gray-300` | `text-gray-400` "Idle" | none |
+| `running` | `bg-yellow-400 animate-pulse` | `text-yellow-600` "Running…" | `ring-2 ring-offset-1` in accent color |
+| `done` | `bg-emerald-400` | `text-emerald-600` "Done" | none |
+| `error` | `bg-red-400` | `text-red-500` "Error" | `ring-2 ring-offset-1 ring-red-300` |
+
+### Edge cases
+- **`agents` empty** → "No agents active." message instead of blank grid
+- **`running` + empty items** → 3 skeleton placeholder rows (`animate-pulse`)
+- **`running` + partial items** → show real items (skeletons only when `items.length === 0`)
+- **`done` + empty items** → "No recommendations available." in `text-gray-400`
+- **Unknown `id`** → fallback gray `AccentConfig`
+- **Long strings** → `truncate` on value span to prevent card overflow
+- **SSR-safe** → no browser APIs; no `"use client"` needed
+
+### Layout
+```
+<section>
+  <p> "AGENT OUTPUTS"  — section label (uppercase, tracking-widest, text-gray-400)
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    AgentCard (budget)
+    AgentCard (attractions)
+    AgentCard (food)
+```
+
+---
+
 ## Decisions Made
 
 | Decision | Rationale |
