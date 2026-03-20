@@ -112,6 +112,12 @@ npm run lhci          # Lighthouse CI (needs LHCI_GITHUB_APP_TOKEN)
 
 ---
 
+## Additional Context
+
+@docs/TripagentPRD.pdf
+
+---
+
 ## Context Management (Claude Code)
 
 - Run `/clear` between unrelated tasks (e.g., switching from UI work to DB migrations)
