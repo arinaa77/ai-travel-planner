@@ -15,8 +15,11 @@ export default function JudgeScoreCard({ evaluation }: Props) {
           <span>{s.dimension}</span>
           <span>{s.score}</span>
           <ScoreBar score={s.score} />
+          <p>{s.reasoning}</p>
         </div>
       ))}
+
+      <p>{evaluation.verdict}</p>
     </div>
   );
 }
