@@ -31,3 +31,19 @@ describe("JudgeScoreCard — score display", () => {
     expect(screen.getByText("88")).toBeInTheDocument();
   });
 });
+
+describe("JudgeScoreCard — reasoning and verdict", () => {
+  it("renders the verdict text", () => {
+    render(<JudgeScoreCard evaluation={MOCK_EVALUATION} />);
+    expect(
+      screen.getByText(/Strong itinerary with accurate budget/i)
+    ).toBeInTheDocument();
+  });
+
+  it("renders reasoning text for each dimension", () => {
+    render(<JudgeScoreCard evaluation={MOCK_EVALUATION} />);
+    expect(screen.getByText(/within 10% of the \$800 budget/i)).toBeInTheDocument();
+    expect(screen.getByText(/Good mix of cultural sights/i)).toBeInTheDocument();
+    expect(screen.getByText(/realistic using Tokyo's subway/i)).toBeInTheDocument();
+  });
+});
