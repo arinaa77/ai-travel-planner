@@ -1,5 +1,6 @@
 import { JudgeEvaluation } from "@/lib/mockData";
 import ScoreBar from "./ScoreBar";
+import ReasoningAccordion from "./ReasoningAccordion";
 
 interface Props {
   evaluation: JudgeEvaluation;
@@ -15,11 +16,10 @@ export default function JudgeScoreCard({ evaluation }: Props) {
           <span>{s.dimension}</span>
           <span>{s.score}</span>
           <ScoreBar score={s.score} />
-          <p>{s.reasoning}</p>
         </div>
       ))}
 
-      <p>{evaluation.verdict}</p>
+      <ReasoningAccordion scores={evaluation.scores} verdict={evaluation.verdict} />
     </div>
   );
 }
