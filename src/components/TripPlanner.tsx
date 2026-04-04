@@ -26,8 +26,11 @@ export default function TripPlanner() {
   const [agentOutputs, setAgentOutputs] = useState<AgentOutput[] | null>(null);
   const [itinerary, setItinerary] = useState<ItineraryDay[] | null>(null);
   const [evaluation, setEvaluation] = useState<JudgeEvaluation | null>(null);
+  const [lastValues, setLastValues] = useState<TripFormValues | null>(null);
   const [generating, setGenerating] = useState(false);
   const [judging, setJudging] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [savedTripId, setSavedTripId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -37,11 +40,49 @@ export default function TripPlanner() {
       setEvaluation(null);
       setGenerating(false);
       setJudging(false);
+      setSavedTripId(null);
       setError(null);
     }
+
+    function handleLoad(e: Event) {
+      const { id, itinerary: i, agentOutputs: a, evaluation: ev } =
+        (e as CustomEvent).detail;
+      setItinerary(i);
+      setAgentOutputs(a);
+      setEvaluation(ev);
+      setSavedTripId(id ?? "loaded");
+    }
+
     window.addEventListener("tripmind_new_trip", handleReset);
-    return () => window.removeEventListener("tripmind_new_trip", handleReset);
+    window.addEventListener("tripmind_load_trip", handleLoad);
+    return () => {
+      window.removeEventListener("tripmind_new_trip", handleReset);
+      window.removeEventListener("tripmind_load_trip", handleLoad);
+    };
   }, []);
+
+  async function handleSave() {
+    if (!itinerary || !agentOutputs || !evaluation || !lastValues) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/trips", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          destination: lastValues.destination,
+          days: lastValues.days,
+          score: evaluation.overallScore,
+          itinerary,
+          agentOutputs,
+          evaluation,
+        }),
+      });
+      const data = await res.json();
+      if (data.id) setSavedTripId(data.id);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   async function handleGenerate(values: TripFormValues) {
     setGenerating(true);
@@ -50,6 +91,8 @@ export default function TripPlanner() {
     setAgentOutputs(null);
     setItinerary(null);
     setEvaluation(null);
+    setSavedTripId(null);
+    setLastValues(values);
 
     try {
       // Step 1: generate — show results as soon as ready
@@ -86,28 +129,11 @@ export default function TripPlanner() {
       const evalResult: JudgeEvaluation = await judgeRes.json();
       setEvaluation(evalResult);
 
-      const tripId = `${values.destination}-${Date.now()}`;
       saveRecentTrip({
-        id: tripId,
+        id: `${values.destination}-${Date.now()}`,
         destination: values.destination,
         days: values.days,
         score: evalResult.overallScore,
-      });
-
-      // Save to Supabase if logged in (fire-and-forget)
-      fetch("/api/trips", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          destination: values.destination,
-          days: values.days,
-          score: evalResult.overallScore,
-          itinerary: generatedItinerary,
-          agentOutputs: generatedOutputs,
-          evaluation: evalResult,
-        }),
-      }).catch(() => {
-        // Not logged in or network error — localStorage already saved
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");
@@ -157,6 +183,21 @@ export default function TripPlanner() {
       {evaluation && (
         <div className="mt-6">
           <JudgeScoreCard evaluation={evaluation} />
+          <div className="mt-4 flex justify-end">
+            {savedTripId ? (
+              <span className="text-sm font-semibold text-emerald-500">
+                Saved!
+              </span>
+            ) : (
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-5 py-2 text-sm font-bold rounded-full text-white bg-gradient-to-r from-violet-500 to-pink-500 hover:opacity-90 transition-all shadow-sm disabled:opacity-60"
+              >
+                {saving ? "Saving…" : "Save trip"}
+              </button>
+            )}
+          </div>
         </div>
       )}
 
