@@ -2,14 +2,14 @@
 
 **Members**: Yihan Wang, Kaichen Qu
 
-Generates personalized travel itineraries using a parallel multi-agent architecture. Three specialized AI agents (budget, attractions, food) run simultaneously, a coordinator merges their outputs, and an LLM-as-judge evaluates the result across multiple dimensions.
+Generates personalized travel itineraries using Claude. A single AI call produces a full day-by-day itinerary with budget, attractions, and food breakdowns. An LLM-as-judge then evaluates the result across cost accuracy, diversity, and feasibility.
 
 ---
 
 ## Features
 
-- **Parallel agent generation**: budget, attractions, and food agents run concurrently via `Promise.all()`
-- **Agent debate view**: see each agent's raw plan before the coordinator merges them
+- **AI itinerary generation**: single Claude call produces a full day-by-day plan with budget, attractions, and food breakdowns
+- **Agent output view**: see budget, attractions, and food summaries from the generation step
 - **LLM-as-judge**: multi-dimensional scoring (cost accuracy, diversity, feasibility) with reasoning text
 - **Day remix**: regenerate a single day without rerunning the whole trip
 - **Destination compare**: run parallel evals across two cities and pick the better fit
@@ -50,13 +50,12 @@ ai-travel-planner/
 │   │   ├── dashboard/          # Trip history + eval dashboard
 │   │   ├── trips/[id]/         # Individual trip view
 │   │   └── api/
-│   │       ├── generate/       # Orchestrates parallel agents
+│   │       ├── generate/       # Single Claude call → itinerary + breakdowns
 │   │       ├── judge/          # LLM-as-judge evaluation
 │   │       ├── trips/          # CRUD for saved trips
 │   │       └── evals/          # Eval history endpoints
 │   ├── services/
-│   │   ├── agentOrchestrator.ts   # Promise.all() agent runner
-│   │   ├── coordinatorAgent.ts    # Merges 3 agent outputs
+│   │   ├── generateService.ts     # Single Claude call → itinerary + breakdowns
 │   │   ├── judgeService.ts        # LLM judge + scoring
 │   │   └── tripService.ts         # Trip CRUD business logic
 │   ├── components/
@@ -146,17 +145,14 @@ Open [http://localhost:3000](http://localhost:3000).
 - Rate limiting (10 req/min per user on `/api/generate`)
 - Request logging for Sentry
 
-### Parallel Agent Pattern
+### Generation Pattern
 
 ```typescript
-// src/services/agentOrchestrator.ts
-const [budget, attractions, food] = await Promise.all([
-  budgetAgent(input),
-  attractionsAgent(input),
-  foodAgent(input),
-]);
-const merged = await coordinatorAgent({ budget, attractions, food });
-const evaluation = await judgeService.evaluate(merged);
+// src/services/generateService.ts
+// Single Claude call returns itinerary + agent panel data in one structured response
+const result = await generateTrip({ destination, days, budget, style });
+// result.itinerary  → ItineraryDay[]
+// result.agentOutputs → budget / attractions / food breakdowns for the panel
 ```
 
 ### Database

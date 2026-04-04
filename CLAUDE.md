@@ -2,7 +2,7 @@
 
 ## Project
 
-**TripAgent**: AI travel planner using parallel multi-agent architecture.
+**TripAgent**: AI travel planner using Claude to generate personalized itineraries with LLM-as-judge evaluation.
 
 **Members**: Yihan Wang, Kaichen Qu
 
@@ -29,26 +29,26 @@
 ```
 middleware.ts          ← API gateway: auth + rate limiting on all /api/*
 app/api/
-  generate/route.ts    ← Orchestrates parallel agents
+  generate/route.ts    ← Single Claude call → itinerary + agent panel data
   judge/route.ts       ← LLM-as-judge evaluation
   trips/route.ts       ← Trip CRUD
 src/services/
-  agentOrchestrator.ts ← Promise.all([budget, attractions, food])
-  coordinatorAgent.ts  ← Merges 3 agent outputs into itinerary
+  generateService.ts   ← Calls Claude once; returns itinerary + budget/attractions/food breakdowns
   judgeService.ts      ← Scores on cost accuracy, diversity, feasibility
   tripService.ts       ← Business logic; never put DB calls in route handlers
+src/services/prompts/
+  generatePrompt.ts    ← System + user prompt for itinerary generation
+  judgePrompt.ts       ← System + user prompt for judge evaluation
 ```
 
-**Key pattern: parallel agents:**
+**Key pattern: single Claude call returns structured output:**
 ```typescript
-const [budget, attractions, food] = await Promise.all([
-  budgetAgent(input),
-  attractionsAgent(input),
-  foodAgent(input),
-]);
+// generateService.ts — one call, structured via tool_use
+const itinerary = await generateTrip({ destination, days, budget, style });
+// itinerary includes: days[], agentOutputs (budget/attractions/food breakdown)
 ```
 
-**Caching:** Use `unstable_cache` for identical destination+budget lookups. Check Supabase for existing trip before calling agents. No Redis.
+**Caching:** Use `unstable_cache` for identical destination+budget lookups. Check Supabase for existing trip before calling Claude. No Redis.
 
 ---
 
@@ -108,7 +108,7 @@ npm run lhci          # Lighthouse CI (needs LHCI_GITHUB_APP_TOKEN)
 - Don't create new API routes without adding Zod validation and auth check in middleware
 - Don't stream agent output directly to the client without sanitizing for XSS
 - Don't commit `.env.local`: it's in `.gitignore`; use Vercel env dashboard for CI vars
-- Don't run all 3 agents sequentially: always use `Promise.all()` for the parallel pattern
+- Don't add separate budget/attractions/food agent files — generateService handles all three in one Claude call
 
 ---
 
