@@ -10,6 +10,7 @@ export default function Topbar() {
   const [user, setUser] = useState<User | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showTrips, setShowTrips] = useState(false);
+  const [showNewTripConfirm, setShowNewTripConfirm] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -47,7 +48,10 @@ export default function Topbar() {
             </button>
           )}
 
-          <button className="px-5 py-2 text-sm font-bold rounded-full text-white bg-gradient-to-r from-violet-500 to-pink-500 hover:opacity-90 transition-all shadow-sm">
+          <button
+            onClick={() => setShowNewTripConfirm(true)}
+            className="px-5 py-2 text-sm font-bold rounded-full text-white bg-gradient-to-r from-violet-500 to-pink-500 hover:opacity-90 transition-all shadow-sm"
+          >
             New trip ✈︎
           </button>
 
@@ -78,6 +82,34 @@ export default function Topbar() {
 
       {showTrips && (
         <MyTripsPanel onClose={() => setShowTrips(false)} />
+      )}
+
+      {showNewTripConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8">
+            <h2 className="text-lg font-bold text-gray-800 mb-2">Start a new trip?</h2>
+            <p className="text-sm text-gray-500 mb-6">
+              This will clear your current itinerary and results.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowNewTripConfirm(false)}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-500 hover:bg-gray-50 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  window.dispatchEvent(new Event("tripmind_new_trip"));
+                  setShowNewTripConfirm(false);
+                }}
+                className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-violet-500 to-pink-500 hover:opacity-90 transition-all"
+              >
+                Yes, reset
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

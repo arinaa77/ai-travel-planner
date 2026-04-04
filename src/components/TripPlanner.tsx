@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TripInputForm, { TripFormValues } from "@/components/layout/TripInputForm";
 import AgentDebatePanel from "@/components/debate/AgentDebatePanel";
 import JudgeScoreCard from "@/components/judge/JudgeScoreCard";
@@ -29,6 +29,19 @@ export default function TripPlanner() {
   const [generating, setGenerating] = useState(false);
   const [judging, setJudging] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    function handleReset() {
+      setAgentOutputs(null);
+      setItinerary(null);
+      setEvaluation(null);
+      setGenerating(false);
+      setJudging(false);
+      setError(null);
+    }
+    window.addEventListener("tripmind_new_trip", handleReset);
+    return () => window.removeEventListener("tripmind_new_trip", handleReset);
+  }, []);
 
   async function handleGenerate(values: TripFormValues) {
     setGenerating(true);

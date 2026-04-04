@@ -55,6 +55,42 @@ describe("Topbar — logged out", () => {
   });
 });
 
+describe("Topbar — new trip confirmation", () => {
+  beforeEach(() => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
+    mockOnAuthStateChange.mockReturnValue({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    });
+  });
+
+  it("shows confirmation dialog on New trip click", async () => {
+    render(<Topbar />);
+    fireEvent.click(await screen.findByText("New trip ✈︎"));
+    expect(screen.getByText("Start a new trip?")).toBeInTheDocument();
+  });
+
+  it("dismisses dialog on Cancel", async () => {
+    render(<Topbar />);
+    fireEvent.click(await screen.findByText("New trip ✈︎"));
+    fireEvent.click(screen.getByText("Cancel"));
+    expect(screen.queryByText("Start a new trip?")).not.toBeInTheDocument();
+  });
+
+  it("dispatches tripmind_new_trip event and closes on confirm", async () => {
+    const handler = vi.fn();
+    window.addEventListener("tripmind_new_trip", handler);
+
+    render(<Topbar />);
+    fireEvent.click(await screen.findByText("New trip ✈︎"));
+    fireEvent.click(screen.getByText("Yes, reset"));
+
+    expect(handler).toHaveBeenCalledOnce();
+    expect(screen.queryByText("Start a new trip?")).not.toBeInTheDocument();
+
+    window.removeEventListener("tripmind_new_trip", handler);
+  });
+});
+
 describe("Topbar — logged in", () => {
   const mockUser = { id: "user-1", email: "test@example.com" };
 
