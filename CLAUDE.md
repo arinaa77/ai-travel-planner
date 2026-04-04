@@ -12,12 +12,13 @@
 
 | Layer | Tool | Notes |
 |---|---|---|
-| Framework | Next.js 14 App Router | `/app` dir; API routes in `/app/api/` |
-| UI | Tailwind + shadcn/ui | Option A aesthetic: DM Sans + DM Serif Display |
-| State | TanStack Query | All async/streaming state goes through this |
-| AI | Claude API | Model: `claude-sonnet-4` |
+| Framework | Next.js 15 App Router | `/src/app` dir; API routes in `/src/app/api/` |
+| UI | Tailwind CSS 4 | DM Sans + DM Serif Display aesthetic |
+| State | useState + fetch | No TanStack Query yet; plain client components |
+| AI | Claude API (`@anthropic-ai/sdk`) | Model: `claude-sonnet-4-5`; structured output via `tool_use` |
+| Local persistence | localStorage | Recent trips (max 5) |
 | DB | Supabase (PostgreSQL) | Auth + RLS; never bypass RLS with service role on client |
-| DB client | @supabase/supabase-js | Direct client; no ORM layer; RLS enforced in Supabase dashboard |
+| DB client | @supabase/supabase-js | Direct client; no ORM layer |
 | Validation | Zod | Every API route input must be validated with a Zod schema before use |
 | CI/CD | GitHub Actions + Vercel | 3 envs: preview (PR), staging (main), production (tag) |
 | Monitoring | Sentry + Vercel Analytics | Import `@sentry/nextjs` for server errors; never log API keys |
@@ -27,28 +28,35 @@
 ## Architecture
 
 ```
-middleware.ts          ← API gateway: auth + rate limiting on all /api/*
-app/api/
-  generate/route.ts    ← Single Claude call → itinerary + agent panel data
+src/app/api/
+  generate/route.ts    ← Single Claude call → itinerary + trip breakdown data
   judge/route.ts       ← LLM-as-judge evaluation
-  trips/route.ts       ← Trip CRUD
 src/services/
-  generateService.ts   ← Calls Claude once; returns itinerary + budget/attractions/food breakdowns
+  generateService.ts   ← Calls Claude once via tool_use; returns itinerary + budget/attractions/food breakdowns
   judgeService.ts      ← Scores on cost accuracy, diversity, feasibility
-  tripService.ts       ← Business logic; never put DB calls in route handlers
 src/services/prompts/
   generatePrompt.ts    ← System + user prompt for itinerary generation
   judgePrompt.ts       ← System + user prompt for judge evaluation
+src/components/
+  TripPlanner.tsx      ← Client component; chains generate → judge with split loading states
+  layout/Sidebar.tsx   ← Reads recent trips from localStorage; updates via tripmind_trips_updated event
 ```
 
-**Key pattern: single Claude call returns structured output:**
+**Key pattern: single Claude call via tool_use:**
 ```typescript
-// generateService.ts — one call, structured via tool_use
-const itinerary = await generateTrip({ destination, days, budget, style });
-// itinerary includes: days[], agentOutputs (budget/attractions/food breakdown)
+// generateService.ts
+const result = await generateTrip({ destination, days, budget, style });
+// result.itinerary      → ItineraryDay[]
+// result.agentOutputs   → budget / attractions / food breakdowns for the panel
 ```
 
-**Caching:** Use `unstable_cache` for identical destination+budget lookups. Check Supabase for existing trip before calling Claude. No Redis.
+**Recent trips (localStorage):**
+- Saved to `tripmind_recent_trips` key after each successful generate + judge
+- Max 5 entries; newest first
+- Sidebar subscribes to `tripmind_trips_updated` window event for live updates
+- No DB required; will migrate to Supabase when auth is added
+
+**Split loading UX:** generate and judge are sequential but display independently — trip breakdown renders as soon as generate completes, judge evaluation appears below when ready.
 
 ---
 
@@ -92,11 +100,11 @@ npm run lhci          # Lighthouse CI (needs LHCI_GITHUB_APP_TOKEN)
 ```
 
 - Validate all user inputs with Zod before they touch a prompt or DB query
-- Use `generateObject` with a typed Zod schema when you need structured JSON from Claude
+- Use `client.messages.create` with `tool_use` + `tool_choice` for structured JSON from Claude (`generateObject` is Vercel AI SDK — not available here)
 - Keep agent prompts in `src/services/prompts/` as named constants: never inline long strings
 - Use `unstable_cache` for expensive repeated lookups
 - Add Sentry `captureException` in service-layer catch blocks
-- Keep components pure: data fetching via TanStack Query hooks only
+- Keep components pure: data fetching via `useState` + `fetch` in client components (migrate to TanStack Query when added)
 
 ---
 
