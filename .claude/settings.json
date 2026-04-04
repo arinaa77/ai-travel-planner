@@ -1,0 +1,40 @@
+{
+  "allowedTools": ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+  "deniedTools": ["WebSearch"],
+  "allowedCommands": ["npm run *", "npx supabase *", "git *"],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file=\"$CLAUDE_TOOL_INPUT_PATH\"; if echo \"$file\" | grep -q '\\.env'; then echo \"ERROR: Editing .env files is blocked to prevent accidental secret exposure.\"; exit 1; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/yihanwang/Desktop/ai-travel-planner && npx tsc --noEmit 2>&1 | head -20"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/yihanwang/Desktop/ai-travel-planner && npm run test 2>&1 | tail -10"
+          }
+        ]
+      }
+    ]
+  }
+}
