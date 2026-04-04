@@ -4,7 +4,8 @@ import { useState } from "react";
 import TripInputForm, { TripFormValues } from "@/components/layout/TripInputForm";
 import AgentDebatePanel from "@/components/debate/AgentDebatePanel";
 import JudgeScoreCard from "@/components/judge/JudgeScoreCard";
-import { AgentOutput, JudgeEvaluation } from "@/lib/mockData";
+import { AgentOutput, JudgeEvaluation, ItineraryDay } from "@/lib/mockData";
+import ItineraryTimeline from "@/components/itinerary/ItineraryTimeline";
 
 export interface RecentTrip {
   id: string;
@@ -23,6 +24,7 @@ function saveRecentTrip(trip: RecentTrip) {
 
 export default function TripPlanner() {
   const [agentOutputs, setAgentOutputs] = useState<AgentOutput[] | null>(null);
+  const [itinerary, setItinerary] = useState<ItineraryDay[] | null>(null);
   const [evaluation, setEvaluation] = useState<JudgeEvaluation | null>(null);
   const [generating, setGenerating] = useState(false);
   const [judging, setJudging] = useState(false);
@@ -33,6 +35,7 @@ export default function TripPlanner() {
     setJudging(false);
     setError(null);
     setAgentOutputs(null);
+    setItinerary(null);
     setEvaluation(null);
 
     try {
@@ -46,8 +49,9 @@ export default function TripPlanner() {
         const data = await genRes.json();
         throw new Error(data.error ?? "Generation failed");
       }
-      const { agentOutputs: generatedOutputs } = await genRes.json();
+      const { agentOutputs: generatedOutputs, itinerary: generatedItinerary } = await genRes.json();
       setAgentOutputs(generatedOutputs);
+      setItinerary(generatedItinerary);
       setGenerating(false);
 
       // Step 2: judge — runs after breakdown is already visible
@@ -123,6 +127,12 @@ export default function TripPlanner() {
       {evaluation && (
         <div className="mt-6">
           <JudgeScoreCard evaluation={evaluation} />
+        </div>
+      )}
+
+      {itinerary && (
+        <div className="mt-6 pb-10">
+          <ItineraryTimeline days={itinerary} />
         </div>
       )}
     </div>
