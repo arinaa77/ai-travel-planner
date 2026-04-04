@@ -78,12 +78,13 @@ function AgentCard({ agent }: { agent: AgentOutput }) {
           <ul className="divide-y divide-gray-100">
             {agent.items.map((item, i) => {
               const isLast = i === agent.items.length - 1;
+              const highlight = isLast && agent.id === "budget";
               return (
                 <li key={i} className="flex items-baseline justify-between gap-4 py-2.5">
-                  <span className={`text-sm truncate ${isLast ? "font-semibold text-gray-800" : "text-gray-400"}`}>
+                  <span className={`text-sm truncate ${highlight ? "font-semibold text-gray-800" : "text-gray-400"}`}>
                     {item.label}
                   </span>
-                  <span className={`text-sm font-semibold shrink-0 truncate ${isLast ? accent.value : "text-gray-800"}`}>
+                  <span className={`text-sm font-semibold shrink-0 truncate ${highlight ? accent.value : "text-gray-800"}`}>
                     {item.value}
                   </span>
                 </li>
