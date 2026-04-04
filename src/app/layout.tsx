@@ -6,6 +6,7 @@ import Sidebar from "@/components/layout/Sidebar";
 export const metadata: Metadata = {
   title: "TripAgent — AI Travel Planner",
   description: "Multi-agent AI travel planning with parallel recommendations",
+  icons: { icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🛫</text></svg>" },
 };
 
 export default function RootLayout({
