@@ -73,11 +73,28 @@ export default function TripPlanner() {
       const evalResult: JudgeEvaluation = await judgeRes.json();
       setEvaluation(evalResult);
 
+      const tripId = `${values.destination}-${Date.now()}`;
       saveRecentTrip({
-        id: `${values.destination}-${Date.now()}`,
+        id: tripId,
         destination: values.destination,
         days: values.days,
         score: evalResult.overallScore,
+      });
+
+      // Save to Supabase if logged in (fire-and-forget)
+      fetch("/api/trips", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          destination: values.destination,
+          days: values.days,
+          score: evalResult.overallScore,
+          itinerary: generatedItinerary,
+          agentOutputs: generatedOutputs,
+          evaluation: evalResult,
+        }),
+      }).catch(() => {
+        // Not logged in or network error — localStorage already saved
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");
