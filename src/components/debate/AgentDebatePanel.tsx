@@ -106,7 +106,7 @@ export default function AgentDebatePanel({ agents }: AgentDebatePanelProps) {
   return (
     <section>
       <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
-        Agent outputs
+        Trip breakdown
       </p>
       {agents.length === 0 ? (
         <p className="text-sm text-gray-400">No agents active.</p>

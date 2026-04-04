@@ -201,7 +201,7 @@ export const MOCK_ITINERARY: ItineraryDay[] = [
 export const MOCK_AGENT_OUTPUTS: AgentOutput[] = [
   {
     id: "budget",
-    name: "Budget agent",
+    name: "Budget",
     status: "done",
     items: [
       { label: "Flights (round trip)", value: "$420" },
@@ -213,7 +213,7 @@ export const MOCK_AGENT_OUTPUTS: AgentOutput[] = [
   },
   {
     id: "attractions",
-    name: "Attractions agent",
+    name: "Attractions",
     status: "done",
     items: [
       { label: "Day 1", value: "Shinjuku + Meiji Shrine" },
@@ -223,7 +223,7 @@ export const MOCK_AGENT_OUTPUTS: AgentOutput[] = [
   },
   {
     id: "food",
-    name: "Food agent",
+    name: "Food",
     status: "done",
     items: [
       { label: "Day 1 dinner", value: "Ichiran Ramen" },
