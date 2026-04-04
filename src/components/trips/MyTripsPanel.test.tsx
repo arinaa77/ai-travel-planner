@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import MyTripsPanel from "./MyTripsPanel";
 import { MOCK_DB_TRIPS } from "@/lib/mockData";
@@ -72,5 +73,53 @@ describe("MyTripsPanel — structure", () => {
 
     fireEvent.click(screen.getByText("×"));
     expect(onClose).toHaveBeenCalledOnce();
+  });
+});
+
+describe("MyTripsPanel — load and delete", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("dispatches tripmind_load_trip and closes on row click", async () => {
+    const listRes = new Response(JSON.stringify({ trips: MOCK_DB_TRIPS }), { status: 200 });
+    const tripRes = new Response(
+      JSON.stringify({
+        trip: { itinerary: [], agent_outputs: [], evaluation: {} },
+      }),
+      { status: 200 }
+    );
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(listRes)
+      .mockResolvedValueOnce(tripRes);
+
+    const handler = vi.fn();
+    window.addEventListener("tripmind_load_trip", handler);
+
+    const onClose = vi.fn();
+    render(<MyTripsPanel onClose={onClose} />);
+    fireEvent.click(await screen.findByText("Tokyo"));
+
+    await waitFor(() => expect(handler).toHaveBeenCalledOnce());
+    expect(onClose).toHaveBeenCalledOnce();
+
+    window.removeEventListener("tripmind_load_trip", handler);
+  });
+
+  it("removes trip from list after delete", async () => {
+    const listRes = new Response(JSON.stringify({ trips: MOCK_DB_TRIPS }), { status: 200 });
+    const deleteRes = new Response(JSON.stringify({ ok: true }), { status: 200 });
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(listRes)
+      .mockResolvedValueOnce(deleteRes);
+
+    render(<MyTripsPanel onClose={vi.fn()} />);
+    await screen.findByText("Tokyo");
+
+    const deleteButtons = screen.getAllByLabelText("Delete trip");
+    fireEvent.click(deleteButtons[0]);
+
+    await waitFor(() => expect(screen.queryByText("Tokyo")).not.toBeInTheDocument());
+    expect(screen.getByText("Kyoto")).toBeInTheDocument();
   });
 });
