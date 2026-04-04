@@ -278,6 +278,13 @@ export const MOCK_TRIP: Trip = {
   createdAt: "2026-03-19T10:00:00Z",
 }
 
+// ─── Mock DB trips (as returned by GET /api/trips) ────────────────────────────
+
+export const MOCK_DB_TRIPS = [
+  { id: "1", destination: "Tokyo", days: 3, score: 86, created_at: "2026-04-01T00:00:00Z" },
+  { id: "2", destination: "Kyoto", days: 5, score: 91, created_at: "2026-03-20T00:00:00Z" },
+]
+
 // ─── Mock sidebar trips ────────────────────────────────────────────────────────
 
 export const MOCK_RECENT_TRIPS = [
