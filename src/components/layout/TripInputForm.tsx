@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-interface TripFormValues {
+export interface TripFormValues {
   destination: string;
   days: number;
   budget: number;
@@ -17,7 +17,11 @@ const TRAVEL_STYLES = [
   { label: "💸 Budget", value: "Budget" },
 ];
 
-export default function TripInputForm() {
+interface Props {
+  onGenerate?: (values: TripFormValues) => void;
+}
+
+export default function TripInputForm({ onGenerate }: Props) {
   const [form, setForm] = useState<TripFormValues>({
     destination: "",
     days: 5,
@@ -27,7 +31,7 @@ export default function TripInputForm() {
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log("Trip submitted:", form);
+    onGenerate?.(form);
   }
 
   return (
