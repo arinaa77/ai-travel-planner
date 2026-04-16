@@ -33,6 +33,17 @@ describe("JudgeScoreCard — score display", () => {
   });
 });
 
+describe("JudgeScoreCard — fallback color", () => {
+  it("renders without crashing when dimension has no mapped color", () => {
+    const evalWithUnknown = {
+      ...MOCK_EVALUATION,
+      scores: [{ dimension: "Unknown dimension", score: 75, reasoning: "test" }],
+    };
+    render(<JudgeScoreCard evaluation={evalWithUnknown} />);
+    expect(screen.getByText("Unknown dimension")).toBeInTheDocument();
+  });
+});
+
 describe("JudgeScoreCard — reasoning and verdict", () => {
   it("renders the verdict text", () => {
     render(<JudgeScoreCard evaluation={MOCK_EVALUATION} />);

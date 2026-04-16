@@ -1,17 +1,104 @@
-import { render, screen, act, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, act, waitFor, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import TripPlanner from "./TripPlanner";
 import { MOCK_ITINERARY, MOCK_AGENT_OUTPUTS, MOCK_EVALUATION } from "@/lib/mockData";
 
-// Minimal fetch mock — tests don't exercise the API
-beforeEach(() => {
-  vi.spyOn(globalThis, "fetch").mockResolvedValue(
-    new Response(JSON.stringify({}), { status: 200 })
-  );
-});
-
 afterEach(() => {
   vi.restoreAllMocks();
+});
+
+describe("TripPlanner — generate error", () => {
+  it("shows error message when generate API returns non-ok", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ error: "Generation failed" }), { status: 500 })
+    );
+
+    render(<TripPlanner />);
+    fireEvent.change(screen.getByPlaceholderText("Tokyo, Japan"), {
+      target: { value: "Tokyo" },
+    });
+    fireEvent.submit(screen.getByRole("button", { name: /Generate/i }).closest("form")!);
+
+    await waitFor(() =>
+      expect(screen.getByText(/Generation failed/i)).toBeInTheDocument()
+    );
+  });
+});
+
+describe("TripPlanner — generate success", () => {
+  it("renders agent outputs and evaluation after successful generate and judge", async () => {
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (url) => {
+      if (String(url).includes("/api/generate")) {
+        return new Response(
+          JSON.stringify({ itinerary: MOCK_ITINERARY, agentOutputs: MOCK_AGENT_OUTPUTS }),
+          { status: 200 }
+        );
+      }
+      return new Response(JSON.stringify(MOCK_EVALUATION), { status: 200 });
+    });
+
+    render(<TripPlanner />);
+    fireEvent.change(screen.getByPlaceholderText("Tokyo, Japan"), {
+      target: { value: "Tokyo" },
+    });
+    fireEvent.submit(screen.getByRole("button", { name: /Generate/i }).closest("form")!);
+
+    await waitFor(() =>
+      expect(screen.getByText("Save trip")).toBeInTheDocument()
+    );
+    expect(screen.getByText("Full itinerary")).toBeInTheDocument();
+  });
+});
+
+describe("TripPlanner — judge error", () => {
+  it("shows error when judge API returns non-ok after successful generate", async () => {
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (url) => {
+      if (String(url).includes("/api/generate")) {
+        return new Response(
+          JSON.stringify({ itinerary: MOCK_ITINERARY, agentOutputs: MOCK_AGENT_OUTPUTS }),
+          { status: 200 }
+        );
+      }
+      return new Response(JSON.stringify({ error: "Evaluation failed" }), { status: 500 });
+    });
+
+    render(<TripPlanner />);
+    fireEvent.change(screen.getByPlaceholderText("Tokyo, Japan"), {
+      target: { value: "Tokyo" },
+    });
+    fireEvent.submit(screen.getByRole("button", { name: /Generate/i }).closest("form")!);
+
+    await waitFor(() =>
+      expect(screen.getByText(/Evaluation failed/i)).toBeInTheDocument()
+    );
+  });
+});
+
+describe("TripPlanner — save trip", () => {
+  it("shows Saved! after clicking Save trip", async () => {
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (url) => {
+      if (String(url).includes("/api/generate")) {
+        return new Response(
+          JSON.stringify({ itinerary: MOCK_ITINERARY, agentOutputs: MOCK_AGENT_OUTPUTS }),
+          { status: 200 }
+        );
+      }
+      if (String(url).includes("/api/judge")) {
+        return new Response(JSON.stringify(MOCK_EVALUATION), { status: 200 });
+      }
+      return new Response(JSON.stringify({ id: "saved-123" }), { status: 200 });
+    });
+
+    render(<TripPlanner />);
+    fireEvent.change(screen.getByPlaceholderText("Tokyo, Japan"), {
+      target: { value: "Tokyo" },
+    });
+    fireEvent.submit(screen.getByRole("button", { name: /Generate/i }).closest("form")!);
+
+    await waitFor(() => expect(screen.getByText("Save trip")).toBeInTheDocument());
+    fireEvent.click(screen.getByText("Save trip"));
+    await waitFor(() => expect(screen.getByText("Saved!")).toBeInTheDocument());
+  });
 });
 
 describe("TripPlanner — new trip reset", () => {
