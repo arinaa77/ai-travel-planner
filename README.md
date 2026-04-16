@@ -35,7 +35,7 @@ Generates personalized travel itineraries using Claude. A single AI call produce
 
 ## Architecture Diagram
 
-![Architecture](docs/architecture.jpg)
+![Architecture](docs/architecture.svg)
 
 ## Project Structure
 
