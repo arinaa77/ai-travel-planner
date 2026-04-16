@@ -28,8 +28,7 @@ Generates personalized travel itineraries using Claude. A single AI call produce
 | Database | Supabase (PostgreSQL + Auth) |
 | Validation | Zod |
 | CI/CD | GitHub Actions + Vercel |
-| Error tracking | Sentry |
-| Performance | Lighthouse CI |
+| Testing | Vitest + Playwright |
 
 ---
 
@@ -79,24 +78,40 @@ ai-travel-planner/
 │       └── prompts/
 │           ├── generatePrompt.ts
 │           └── judgePrompt.ts
+├── e2e/
+│   └── home.spec.ts                 ← Playwright smoke tests
 ├── docs/
-│   ├── architecture.jpg
+│   ├── architecture.svg
 │   ├── claude/
 │   │   ├── architecture.md
 │   │   ├── conventions.md
 │   │   ├── skills.md
-│   │   └── testing.md
+│   │   ├── testing.md
+│   │   └── workflow.md              ← Claude Code workflow evidence
+│   ├── skills/
+│   │   ├── task1-log.md
+│   │   ├── task2-log.md
+│   │   └── changelog.md
+│   ├── sprints/
+│   │   ├── sprint1.md
+│   │   ├── sprint2.md
+│   │   └── sprint3.md
 │   └── TripagentPRD.pdf
 ├── .claude/
 │   ├── settings.json                ← Hooks: PreToolUse, PostToolUse, Stop
+│   ├── agents/
+│   │   └── security-reviewer.md    ← OWASP security review sub-agent
 │   └── skills/
 │       ├── add-feature.md
 │       └── fix-issue.md
 ├── .github/
+│   ├── PULL_REQUEST_TEMPLATE.md     ← C.L.E.A.R. + security checklist
 │   └── workflows/
-│       ├── ci.yml                   ← Lint, type-check, tests, security scan
+│       ├── ci.yml                   ← Lint, type-check, tests, security scan, E2E
 │       └── ai-review.yml            ← AI PR review via claude-code-action
+├── .gitleaks.toml                   ← Secret scanning config
 ├── .mcp.json                        ← GitHub MCP server
+├── playwright.config.ts
 ├── CLAUDE.md
 └── README.md
 ```
@@ -170,7 +185,7 @@ const result = await generateTrip({ destination, days, budget, style });
 // result.agentOutputs → budget / attractions / food breakdowns for the panel
 ```
 
-Uses `client.messages.create` with `tool_use` + `tool_choice: { type: "auto" }` for structured JSON output. No streaming.
+Uses `client.messages.create` with `tool_use` + `tool_choice: { type: "tool", name: "submit_itinerary" }` to force structured JSON output. No streaming.
 
 ### Database
 
@@ -203,6 +218,12 @@ Merge to main
 ```bash
 # Unit + component tests
 npm run test
+
+# Test coverage (70%+ threshold)
+npm run test:coverage
+
+# E2E tests (Playwright)
+npm run test:e2e
 
 # Type check
 npm run type-check
