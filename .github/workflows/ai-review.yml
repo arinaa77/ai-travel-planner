@@ -1,0 +1,46 @@
+name: AI PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  claude-review:
+    name: Claude Code Review
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude PR Review
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          direct_prompt: |
+            Review this pull request using the C.L.E.A.R. framework:
+
+            - **Correct**: Are there bugs, logic errors, or incorrect assumptions?
+            - **Lean**: Is there dead code, over-engineering, or unnecessary complexity?
+            - **Explicit**: Are types, variable names, and API contracts clear?
+            - **Accurate**: Does the implementation match what the PR description claims?
+            - **Resilient**: Are edge cases handled? Are Zod validations present at API boundaries?
+
+            Also check for:
+            - No `any` types (TypeScript strict mode enforced)
+            - No API keys or secrets in client-side code (`NEXT_PUBLIC_` prefix)
+            - Supabase RLS not bypassed (no service role key on client)
+            - All new API routes validate input with Zod before use
+            - No direct DB calls from React components
+
+            End your review with an **AI Disclosure** block:
+            ```
+            ## AI Disclosure
+            - Tool: Claude Code (claude-sonnet-4-5)
+            - Review scope: [files changed]
+            - Human review still required for: auth flows, DB schema changes, security-critical paths
+            ```
