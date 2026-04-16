@@ -36,8 +36,10 @@
 - Need to open GitHub Issues with proper acceptance criteria before starting work
 
 ### Async Standups
-- Apr 10 (Yihan): auth routes done, starting MyTripsPanel, tests will follow after
-- Apr 10 (Kaichen): reviewing auth PR, will write trip CRUD tests
-- Apr 14 (Yihan): CI pipeline merged, fixing eslint flat config issue
-- Apr 14 (Kaichen): Gitleaks config added, PR template drafted
-- Apr 16 (Yihan): worktrees set up for coverage + sprint docs, TDD formatters complete
+Apr 5 (Yihan): Supabase auth routes done, starting MyTripsPanel and trips CRUD API
+Apr 5 (Kaichen): reviewing auth PR, will write trip CRUD tests this week
+Apr 10 (Yihan): trip save/load/delete working with RLS, CI pipeline being set up
+Apr 10 (Kaichen): trip CRUD tests done, starting security-reviewer agent in .claude/agents/
+Apr 14 (Yihan): CI pipeline merged after fixing ESLint flat config issue, Gitleaks added
+Apr 14 (Kaichen): PR template with C.L.E.A.R. checklist drafted and merged
+Apr 16 (Yihan): worktrees used for parallel development of coverage config and sprint docs, TDD formatters complete

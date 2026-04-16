@@ -30,6 +30,10 @@
 - README was aspirational; should reflect actual code from the start
 
 ### Async Standups
-- Apr 1 (Yihan): finished generate service, judge scoring wired up, need to add test for verdict display
-- Apr 1 (Kaichen): completed ScoreBar and ReasoningAccordion, PR ready for review
-- Apr 2 (Yihan): merged judge tests, starting auth routes next sprint
+Mar 25 (Yihan): generate service scaffolded using /add-feature skill, tool_use pattern working locally
+Mar 25 (Kaichen): TripInputForm and Sidebar layout done, starting JudgeScoreCard component
+Mar 28 (Yihan): judge service done, wiring frontend next; skill v1 had wrong SDK method, filing gap analysis
+Mar 28 (Kaichen): ScoreBar and ReasoningAccordion complete, PR ready for review
+Apr 1 (Yihan): TDD cycle done for JudgeScoreCard and ReasoningAccordion, failing tests committed before impl
+Apr 1 (Kaichen): ItineraryTimeline done and merged, Sprint 1 features all complete
+Apr 2 (Yihan): judge tests merged, add-feature skill v2 drafted based on task1 gap analysis
