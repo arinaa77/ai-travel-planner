@@ -1,72 +1,79 @@
-import { render, screen, act } from "@testing-library/react";
+import { render, screen, act, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import Sidebar from "./Sidebar";
 
-const STORAGE_KEY = "tripmind_recent_trips";
+type Trip = { id: string; destination: string; days: number; score: number };
 
-let store: Record<string, string> = {};
-const localStorageMock = {
-  getItem: (key: string) => store[key] ?? null,
-  setItem: (key: string, value: string) => { store[key] = value; },
-  removeItem: (key: string) => { delete store[key]; },
-  clear: () => { store = {}; },
-};
-
-function setTrips(trips: { id: string; destination: string; days: number; score: number }[]) {
-  store[STORAGE_KEY] = JSON.stringify(trips);
+function mockFetch(trips: Trip[]) {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ trips }),
+    })
+  );
 }
 
 describe("Sidebar", () => {
   beforeEach(() => {
-    store = {};
-    vi.stubGlobal("localStorage", localStorageMock);
+    mockFetch([]);
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
-  it("renders the Recent trips label", () => {
+  it("renders the Recent trips label", async () => {
     render(<Sidebar />);
     expect(screen.getByText(/recent trips/i)).toBeInTheDocument();
   });
 
-  it("shows 'No trips yet' when localStorage is empty", () => {
+  it("shows 'No trips yet' when API returns empty list", async () => {
     render(<Sidebar />);
-    expect(screen.getByText(/no trips yet/i)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText(/no trips yet/i)).toBeInTheDocument()
+    );
   });
 
-  it("renders trip destinations from localStorage", () => {
-    setTrips([
+  it("renders trip destinations from API", async () => {
+    mockFetch([
       { id: "1", destination: "Tokyo", days: 5, score: 88 },
       { id: "2", destination: "Paris", days: 3, score: 76 },
     ]);
     render(<Sidebar />);
-    expect(screen.getByText(/Tokyo/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText(/Tokyo/)).toBeInTheDocument());
     expect(screen.getByText(/Paris/)).toBeInTheDocument();
   });
 
-  it("shows trip duration alongside destination", () => {
-    setTrips([{ id: "1", destination: "Tokyo", days: 5, score: 88 }]);
+  it("shows trip duration alongside destination", async () => {
+    mockFetch([{ id: "1", destination: "Tokyo", days: 5, score: 88 }]);
     render(<Sidebar />);
-    expect(screen.getByText(/Tokyo · 5d/)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText(/Tokyo · 5d/)).toBeInTheDocument()
+    );
   });
 
-  it("does not show 'No trips yet' when trips exist", () => {
-    setTrips([{ id: "1", destination: "Tokyo", days: 5, score: 88 }]);
+  it("does not show 'No trips yet' when trips exist", async () => {
+    mockFetch([{ id: "1", destination: "Tokyo", days: 5, score: 88 }]);
     render(<Sidebar />);
-    expect(screen.queryByText(/no trips yet/i)).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByText(/no trips yet/i)).not.toBeInTheDocument()
+    );
   });
 
-  it("updates when tripmind_trips_updated event fires", () => {
+  it("updates when tripmind_trips_updated event fires", async () => {
     render(<Sidebar />);
-    expect(screen.getByText(/no trips yet/i)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText(/no trips yet/i)).toBeInTheDocument()
+    );
 
-    act(() => {
-      setTrips([{ id: "1", destination: "Berlin", days: 4, score: 80 }]);
+    mockFetch([{ id: "1", destination: "Berlin", days: 4, score: 80 }]);
+    await act(async () => {
       window.dispatchEvent(new Event("tripmind_trips_updated"));
     });
 
-    expect(screen.getByText(/Berlin/)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText(/Berlin/)).toBeInTheDocument()
+    );
   });
 });
