@@ -14,14 +14,6 @@ export interface RecentTrip {
   score: number;
 }
 
-function saveRecentTrip(trip: RecentTrip) {
-  const key = "tripmind_recent_trips";
-  const existing: RecentTrip[] = JSON.parse(localStorage.getItem(key) ?? "[]");
-  const updated = [trip, ...existing.filter((t) => t.id !== trip.id)].slice(0, 5);
-  localStorage.setItem(key, JSON.stringify(updated));
-  window.dispatchEvent(new Event("tripmind_trips_updated"));
-}
-
 export default function TripPlanner() {
   const [agentOutputs, setAgentOutputs] = useState<AgentOutput[] | null>(null);
   const [itinerary, setItinerary] = useState<ItineraryDay[] | null>(null);
@@ -78,7 +70,10 @@ export default function TripPlanner() {
         }),
       });
       const data = await res.json();
-      if (data.id) setSavedTripId(data.id);
+      if (data.id) {
+        setSavedTripId(data.id);
+        window.dispatchEvent(new Event("tripmind_trips_updated"));
+      }
     } finally {
       setSaving(false);
     }
@@ -129,12 +124,6 @@ export default function TripPlanner() {
       const evalResult: JudgeEvaluation = await judgeRes.json();
       setEvaluation(evalResult);
 
-      saveRecentTrip({
-        id: `${values.destination}-${Date.now()}`,
-        destination: values.destination,
-        days: values.days,
-        score: evalResult.overallScore,
-      });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");
     } finally {

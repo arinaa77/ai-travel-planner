@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RecentTrip } from "@/components/TripPlanner";
 
 const DOT_CLASSES = [
   "bg-violet-400",
@@ -11,17 +10,26 @@ const DOT_CLASSES = [
   "bg-blue-400",
 ];
 
-function loadRecentTrips(): RecentTrip[] {
-  if (typeof window === "undefined") return [];
-  return JSON.parse(localStorage.getItem("tripmind_recent_trips") ?? "[]");
+interface RecentTrip {
+  id: string;
+  destination: string;
+  days: number;
+  score: number;
+}
+
+async function fetchRecentTrips(): Promise<RecentTrip[]> {
+  const res = await fetch("/api/trips");
+  if (!res.ok) return [];
+  const { trips } = await res.json();
+  return trips ?? [];
 }
 
 export default function Sidebar() {
   const [recentTrips, setRecentTrips] = useState<RecentTrip[]>([]);
 
   useEffect(() => {
-    setRecentTrips(loadRecentTrips());
-    const handler = () => setRecentTrips(loadRecentTrips());
+    fetchRecentTrips().then(setRecentTrips);
+    const handler = () => fetchRecentTrips().then(setRecentTrips);
     window.addEventListener("tripmind_trips_updated", handler);
     return () => window.removeEventListener("tripmind_trips_updated", handler);
   }, []);
