@@ -70,10 +70,12 @@ export default function TripPlanner() {
         }),
       });
       const data = await res.json();
-      if (data.id) {
-        setSavedTripId(data.id);
-        window.dispatchEvent(new Event("tripmind_trips_updated"));
+      if (!res.ok || !data.id) {
+        setError("Failed to save trip.");
+        return;
       }
+      setSavedTripId(data.id);
+      window.dispatchEvent(new Event("tripmind_trips_updated"));
     } finally {
       setSaving(false);
     }

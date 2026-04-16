@@ -18,7 +18,7 @@ interface RecentTrip {
 }
 
 async function fetchRecentTrips(): Promise<RecentTrip[]> {
-  const res = await fetch("/api/trips");
+  const res = await fetch("/api/trips?limit=5");
   if (!res.ok) return [];
   const { trips } = await res.json();
   return trips ?? [];

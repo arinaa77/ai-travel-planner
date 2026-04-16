@@ -64,6 +64,7 @@ export default function MyTripsPanel({ onClose }: MyTripsPanelProps) {
     try {
       await fetch(`/api/trips/${id}`, { method: "DELETE" });
       setTrips((prev) => prev.filter((t) => t.id !== id));
+      window.dispatchEvent(new Event("tripmind_trips_updated"));
     } finally {
       setDeletingId(null);
     }

@@ -11,7 +11,7 @@ const SaveTripSchema = z.object({
   evaluation: z.unknown(),
 });
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -19,12 +19,15 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const limitParam = new URL(req.url).searchParams.get("limit");
+  const limit = limitParam ? Math.min(parseInt(limitParam, 10), 20) : 20;
+
   const { data, error } = await supabase
     .from("trips")
     .select("id, destination, days, score, created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(limit);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
