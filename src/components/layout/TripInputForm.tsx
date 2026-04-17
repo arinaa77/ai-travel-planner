@@ -19,9 +19,10 @@ const TRAVEL_STYLES = [
 
 interface Props {
   onGenerate?: (values: TripFormValues) => void;
+  disabled?: boolean;
 }
 
-export default function TripInputForm({ onGenerate }: Props) {
+export default function TripInputForm({ onGenerate, disabled }: Props) {
   const [form, setForm] = useState<TripFormValues>({
     destination: "",
     days: 5,
@@ -110,9 +111,10 @@ export default function TripInputForm({ onGenerate }: Props) {
       {/* Submit */}
       <button
         type="submit"
-        className="w-full py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-violet-500 to-pink-500 hover:opacity-90 transition-all shadow-sm"
+        disabled={disabled}
+        className="w-full py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-violet-500 to-pink-500 hover:opacity-90 transition-all shadow-sm disabled:opacity-60"
       >
-        Generate →
+        {disabled ? "Generating…" : "Generate →"}
       </button>
     </form>
   );

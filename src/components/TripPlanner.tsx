@@ -141,7 +141,7 @@ export default function TripPlanner() {
         Our AI agents will build your itinerary in seconds.
       </p>
 
-      <TripInputForm onGenerate={handleGenerate} />
+      <TripInputForm onGenerate={handleGenerate} disabled={generating || judging} />
 
       {generating && (
         <div className="mt-10 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">

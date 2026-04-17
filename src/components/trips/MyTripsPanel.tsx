@@ -45,7 +45,10 @@ export default function MyTripsPanel({ onClose }: MyTripsPanelProps) {
     try {
       const res = await fetch(`/api/trips/${id}`);
       const data = await res.json();
-      if (data.error) return;
+      if (!res.ok || data.error) {
+        setError("Failed to load trip. Please try again.");
+        return;
+      }
       const { itinerary, agent_outputs, evaluation } = data.trip;
       window.dispatchEvent(
         new CustomEvent("tripmind_load_trip", {
