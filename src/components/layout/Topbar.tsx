@@ -19,6 +19,7 @@ export default function Topbar() {
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      window.dispatchEvent(new Event("tripmind_trips_updated"));
     });
 
     return () => listener.subscription.unsubscribe();

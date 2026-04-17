@@ -9,7 +9,19 @@ function mockFetch(trips: Trip[]) {
     "fetch",
     vi.fn().mockResolvedValue({
       ok: true,
+      status: 200,
       json: async () => ({ trips }),
+    })
+  );
+}
+
+function mockFetchUnauthed() {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      json: async () => ({ error: "Unauthorized" }),
     })
   );
 }
@@ -32,6 +44,14 @@ describe("Sidebar", () => {
     render(<Sidebar />);
     await waitFor(() =>
       expect(screen.getByText(/no trips yet/i)).toBeInTheDocument()
+    );
+  });
+
+  it("shows sign in prompt when unauthenticated", async () => {
+    mockFetchUnauthed();
+    render(<Sidebar />);
+    await waitFor(() =>
+      expect(screen.getByText(/sign in to see your trips/i)).toBeInTheDocument()
     );
   });
 

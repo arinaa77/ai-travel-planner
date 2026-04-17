@@ -17,19 +17,22 @@ interface RecentTrip {
   score: number;
 }
 
-async function fetchRecentTrips(): Promise<RecentTrip[]> {
+type TripState = { status: "unauthenticated" } | { status: "loaded"; trips: RecentTrip[] };
+
+async function fetchRecentTrips(): Promise<TripState> {
   const res = await fetch("/api/trips?limit=5");
-  if (!res.ok) return [];
+  if (res.status === 401) return { status: "unauthenticated" };
+  if (!res.ok) return { status: "loaded", trips: [] };
   const { trips } = await res.json();
-  return trips ?? [];
+  return { status: "loaded", trips: trips ?? [] };
 }
 
 export default function Sidebar() {
-  const [recentTrips, setRecentTrips] = useState<RecentTrip[]>([]);
+  const [state, setState] = useState<TripState>({ status: "unauthenticated" });
 
   useEffect(() => {
-    fetchRecentTrips().then(setRecentTrips);
-    const handler = () => fetchRecentTrips().then(setRecentTrips);
+    fetchRecentTrips().then(setState);
+    const handler = () => fetchRecentTrips().then(setState);
     window.addEventListener("tripmind_trips_updated", handler);
     return () => window.removeEventListener("tripmind_trips_updated", handler);
   }, []);
@@ -41,11 +44,13 @@ export default function Sidebar() {
           <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
             Recent trips
           </p>
-          {recentTrips.length === 0 ? (
+          {state.status === "unauthenticated" ? (
+            <p className="text-xs text-gray-300 px-3">Sign in to see your trips</p>
+          ) : state.trips.length === 0 ? (
             <p className="text-xs text-gray-300 px-3">No trips yet</p>
           ) : (
             <div className="flex flex-col gap-1">
-              {recentTrips.map((trip, i) => (
+              {state.trips.map((trip: RecentTrip, i: number) => (
                 <button
                   key={trip.id}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left w-full ${
