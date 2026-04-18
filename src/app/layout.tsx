@@ -6,7 +6,9 @@ import Sidebar from "@/components/layout/Sidebar";
 export const metadata: Metadata = {
   title: "TripAgent — AI Travel Planner",
   description: "Multi-agent AI travel planning with parallel recommendations",
-  icons: { icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🛫</text></svg>" },
+  icons: {
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🛫</text></svg>",
+  },
 };
 
 export default function RootLayout({
@@ -16,7 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
-      <body className="h-full flex flex-col antialiased" style={{ backgroundColor: "#f5f5f7", color: "#2a2a2a" }}>
+      <body
+        className="h-full flex flex-col antialiased"
+        style={{ backgroundColor: "#f5f5f7", color: "#2a2a2a" }}
+      >
         <Topbar />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar />

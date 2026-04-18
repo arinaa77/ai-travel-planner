@@ -12,11 +12,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov"],
-      include: [
-        "src/components/**/*.{ts,tsx}",
-        "src/services/**/*.ts",
-        "src/lib/formatters.ts",
-      ],
+      include: ["src/components/**/*.{ts,tsx}", "src/services/**/*.ts", "src/lib/formatters.ts"],
       exclude: ["src/**/*.test.{ts,tsx}", "src/**/*.d.ts"],
       thresholds: {
         lines: 70,

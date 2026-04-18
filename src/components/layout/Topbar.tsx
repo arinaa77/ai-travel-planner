@@ -75,15 +75,10 @@ export default function Topbar() {
       </header>
 
       {showModal && (
-        <AuthModal
-          onClose={() => setShowModal(false)}
-          onSuccess={() => setShowModal(false)}
-        />
+        <AuthModal onClose={() => setShowModal(false)} onSuccess={() => setShowModal(false)} />
       )}
 
-      {showTrips && (
-        <MyTripsPanel onClose={() => setShowTrips(false)} />
-      )}
+      {showTrips && <MyTripsPanel onClose={() => setShowTrips(false)} />}
 
       {showNewTripConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">

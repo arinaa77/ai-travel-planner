@@ -54,12 +54,12 @@ export default function Sidebar() {
                 <button
                   key={trip.id}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left w-full ${
-                    i === 0
-                      ? "bg-violet-50 text-violet-600"
-                      : "text-gray-500 hover:bg-gray-50"
+                    i === 0 ? "bg-violet-50 text-violet-600" : "text-gray-500 hover:bg-gray-50"
                   }`}
                 >
-                  <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${DOT_CLASSES[i % DOT_CLASSES.length]}`} />
+                  <span
+                    className={`w-2.5 h-2.5 rounded-full shrink-0 ${DOT_CLASSES[i % DOT_CLASSES.length]}`}
+                  />
                   {trip.destination} · {trip.days}d
                 </button>
               ))}

@@ -16,7 +16,14 @@ describe("AgentDebatePanel", () => {
   it("renders agent name and done status", () => {
     render(
       <AgentDebatePanel
-        agents={[{ id: "budget", name: "Budget", status: "done", items: [{ label: "Hotel", value: "$100" }] }]}
+        agents={[
+          {
+            id: "budget",
+            name: "Budget",
+            status: "done",
+            items: [{ label: "Hotel", value: "$100" }],
+          },
+        ]}
       />
     );
     expect(screen.getByText("Budget")).toBeInTheDocument();
@@ -25,18 +32,14 @@ describe("AgentDebatePanel", () => {
 
   it("renders skeleton rows when agent is running with no items", () => {
     render(
-      <AgentDebatePanel
-        agents={[{ id: "budget", name: "Budget", status: "running", items: [] }]}
-      />
+      <AgentDebatePanel agents={[{ id: "budget", name: "Budget", status: "running", items: [] }]} />
     );
     expect(screen.getByText("Running…")).toBeInTheDocument();
   });
 
   it("renders error state when agent status is error", () => {
     render(
-      <AgentDebatePanel
-        agents={[{ id: "budget", name: "Budget", status: "error", items: [] }]}
-      />
+      <AgentDebatePanel agents={[{ id: "budget", name: "Budget", status: "error", items: [] }]} />
     );
     expect(screen.getByText("Agent failed to respond.")).toBeInTheDocument();
   });

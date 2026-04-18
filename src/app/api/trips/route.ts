@@ -13,7 +13,9 @@ const SaveTripSchema = z.object({
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -38,7 +40,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -52,15 +56,19 @@ export async function POST(req: NextRequest) {
 
   const { destination, days, score, itinerary, agentOutputs, evaluation } = parsed.data;
 
-  const { data, error } = await supabase.from("trips").insert({
-    user_id: user.id,
-    destination,
-    days,
-    score,
-    itinerary,
-    agent_outputs: agentOutputs,
-    evaluation,
-  }).select("id").single();
+  const { data, error } = await supabase
+    .from("trips")
+    .insert({
+      user_id: user.id,
+      destination,
+      days,
+      score,
+      itinerary,
+      agent_outputs: agentOutputs,
+      evaluation,
+    })
+    .select("id")
+    .single();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

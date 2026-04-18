@@ -3,62 +3,62 @@
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type EventType = "travel" | "sight" | "food" | "hotel"
+export type EventType = "travel" | "sight" | "food" | "hotel";
 
 export interface ItineraryEvent {
-  id: string
-  time: string
-  title: string
-  subtitle: string
-  type: EventType
-  cost: number | null // null = free
+  id: string;
+  time: string;
+  title: string;
+  subtitle: string;
+  type: EventType;
+  cost: number | null; // null = free
 }
 
 export interface ItineraryDay {
-  day: number
-  title: string
-  events: ItineraryEvent[]
+  day: number;
+  title: string;
+  events: ItineraryEvent[];
 }
 
-export type AgentStatus = "idle" | "running" | "done" | "error"
+export type AgentStatus = "idle" | "running" | "done" | "error";
 
 export interface AgentItem {
-  label: string
-  value: string
+  label: string;
+  value: string;
 }
 
 export interface AgentOutput {
-  id: "budget" | "attractions" | "food"
-  name: string
-  status: AgentStatus
-  items: AgentItem[]
+  id: "budget" | "attractions" | "food";
+  name: string;
+  status: AgentStatus;
+  items: AgentItem[];
 }
 
 export interface JudgeScore {
-  dimension: string
-  score: number // 0–100
-  reasoning: string
+  dimension: string;
+  score: number; // 0–100
+  reasoning: string;
 }
 
 export interface JudgeEvaluation {
-  overallScore: number
-  scores: JudgeScore[]
-  verdict: string
-  model: string
-  evaluatedAt: string
+  overallScore: number;
+  scores: JudgeScore[];
+  verdict: string;
+  model: string;
+  evaluatedAt: string;
 }
 
 export interface Trip {
-  id: string
-  destination: string
-  days: number
-  budget: number
-  totalCost: number
-  interests: string[]
-  itinerary: ItineraryDay[]
-  agentOutputs: AgentOutput[]
-  evaluation: JudgeEvaluation
-  createdAt: string
+  id: string;
+  destination: string;
+  days: number;
+  budget: number;
+  totalCost: number;
+  interests: string[];
+  itinerary: ItineraryDay[];
+  agentOutputs: AgentOutput[];
+  evaluation: JudgeEvaluation;
+  createdAt: string;
 }
 
 // ─── Mock itinerary ────────────────────────────────────────────────────────────
@@ -194,7 +194,7 @@ export const MOCK_ITINERARY: ItineraryDay[] = [
       },
     ],
   },
-]
+];
 
 // ─── Mock agent outputs ────────────────────────────────────────────────────────
 
@@ -231,7 +231,7 @@ export const MOCK_AGENT_OUTPUTS: AgentOutput[] = [
       { label: "Day 3 lunch", value: "Harajuku crepes" },
     ],
   },
-]
+];
 
 // ─── Mock judge evaluation ─────────────────────────────────────────────────────
 
@@ -261,7 +261,7 @@ export const MOCK_EVALUATION: JudgeEvaluation = {
     "Strong itinerary with accurate budget and good variety. Minor diversity penalty for back-to-back cultural sites on Day 2.",
   model: "claude-sonnet-4-5",
   evaluatedAt: "2026-03-19T10:30:00Z",
-}
+};
 
 // ─── Mock full trip ────────────────────────────────────────────────────────────
 
@@ -276,14 +276,14 @@ export const MOCK_TRIP: Trip = {
   agentOutputs: MOCK_AGENT_OUTPUTS,
   evaluation: MOCK_EVALUATION,
   createdAt: "2026-03-19T10:00:00Z",
-}
+};
 
 // ─── Mock DB trips (as returned by GET /api/trips) ────────────────────────────
 
 export const MOCK_DB_TRIPS = [
   { id: "1", destination: "Tokyo", days: 3, score: 86, created_at: "2026-04-01T00:00:00Z" },
   { id: "2", destination: "Kyoto", days: 5, score: 91, created_at: "2026-03-20T00:00:00Z" },
-]
+];
 
 // ─── Mock sidebar trips ────────────────────────────────────────────────────────
 
@@ -291,26 +291,24 @@ export const MOCK_RECENT_TRIPS = [
   { id: "trip-tokyo-001", destination: "Tokyo", days: 3, score: 86 },
   { id: "trip-kyoto-001", destination: "Kyoto", days: 5, score: 91 },
   { id: "trip-osaka-001", destination: "Osaka", days: 2, score: 79 },
-]
+];
 
 export const MOCK_SAVED_TRIPS = [
   { id: "trip-seoul-001", destination: "Seoul", days: 4, score: 88 },
-]
+];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 export function getTotalCost(itinerary: ItineraryDay[]): number {
-  return itinerary
-    .flatMap((day) => day.events)
-    .reduce((sum, event) => sum + (event.cost ?? 0), 0)
+  return itinerary.flatMap((day) => day.events).reduce((sum, event) => sum + (event.cost ?? 0), 0);
 }
 
 export function getBudgetRemaining(budget: number, itinerary: ItineraryDay[]): number {
-  return budget - getTotalCost(itinerary)
+  return budget - getTotalCost(itinerary);
 }
 
 export function getOverallScore(evaluation: JudgeEvaluation): number {
   return Math.round(
     evaluation.scores.reduce((sum, s) => sum + s.score, 0) / evaluation.scores.length
-  )
+  );
 }

@@ -8,8 +8,8 @@ interface Props {
 
 const DIMENSION_COLORS: Record<string, string> = {
   "Cost accuracy": "bg-blue-500",
-  "Diversity": "bg-amber-400",
-  "Feasibility": "bg-emerald-500",
+  Diversity: "bg-amber-400",
+  Feasibility: "bg-emerald-500",
 };
 
 function getFallbackColor(index: number) {

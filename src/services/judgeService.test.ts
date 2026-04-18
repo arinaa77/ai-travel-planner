@@ -32,9 +32,7 @@ const sampleInput = {
   destination: "Tokyo",
   days: 3,
   budget: 2000,
-  agentOutputs: [
-    { id: "budget" as const, name: "Budget", status: "done" as const, items: [] },
-  ],
+  agentOutputs: [{ id: "budget" as const, name: "Budget", status: "done" as const, items: [] }],
 };
 
 describe("evaluateTrip", () => {

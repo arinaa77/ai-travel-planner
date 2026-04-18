@@ -51,9 +51,7 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
           {mode === "signin" ? "Sign in" : "Create account"}
         </h2>
         <p className="text-sm text-gray-500 mb-6">
-          {mode === "signin"
-            ? "Welcome back to TripAgent"
-            : "Start planning with TripAgent"}
+          {mode === "signin" ? "Welcome back to TripAgent" : "Start planning with TripAgent"}
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -89,7 +87,10 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
         <p className="text-sm text-center text-gray-500 mt-5">
           {mode === "signin" ? "No account?" : "Already have one?"}{" "}
           <button
-            onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setError(""); }}
+            onClick={() => {
+              setMode(mode === "signin" ? "signup" : "signin");
+              setError("");
+            }}
             className="text-violet-500 font-semibold hover:underline"
           >
             {mode === "signin" ? "Sign up" : "Sign in"}

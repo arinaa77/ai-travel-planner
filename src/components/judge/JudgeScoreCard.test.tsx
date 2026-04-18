@@ -47,9 +47,7 @@ describe("JudgeScoreCard — fallback color", () => {
 describe("JudgeScoreCard — reasoning and verdict", () => {
   it("renders the verdict text", () => {
     render(<JudgeScoreCard evaluation={MOCK_EVALUATION} />);
-    expect(
-      screen.getByText(/Strong itinerary with accurate budget/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Strong itinerary with accurate budget/i)).toBeInTheDocument();
   });
 
   it("renders reasoning text for each dimension after opening accordion", () => {

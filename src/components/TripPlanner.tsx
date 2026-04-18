@@ -37,8 +37,7 @@ export default function TripPlanner() {
     }
 
     function handleLoad(e: Event) {
-      const { id, itinerary: i, agentOutputs: a, evaluation: ev } =
-        (e as CustomEvent).detail;
+      const { id, itinerary: i, agentOutputs: a, evaluation: ev } = (e as CustomEvent).detail;
       setItinerary(i);
       setAgentOutputs(a);
       setEvaluation(ev);
@@ -125,7 +124,6 @@ export default function TripPlanner() {
       }
       const evalResult: JudgeEvaluation = await judgeRes.json();
       setEvaluation(evalResult);
-
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");
     } finally {
@@ -176,9 +174,7 @@ export default function TripPlanner() {
           <JudgeScoreCard evaluation={evaluation} />
           <div className="mt-4 flex justify-end">
             {savedTripId ? (
-              <span className="text-sm font-semibold text-emerald-500">
-                Saved!
-              </span>
+              <span className="text-sm font-semibold text-emerald-500">Saved!</span>
             ) : (
               <button
                 onClick={handleSave}

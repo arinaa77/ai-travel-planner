@@ -19,9 +19,7 @@ describe("TripPlanner — generate error", () => {
     });
     fireEvent.submit(screen.getByRole("button", { name: /Generate/i }).closest("form")!);
 
-    await waitFor(() =>
-      expect(screen.getByText(/Generation failed/i)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText(/Generation failed/i)).toBeInTheDocument());
   });
 });
 
@@ -43,9 +41,7 @@ describe("TripPlanner — generate success", () => {
     });
     fireEvent.submit(screen.getByRole("button", { name: /Generate/i }).closest("form")!);
 
-    await waitFor(() =>
-      expect(screen.getByText("Save trip")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText("Save trip")).toBeInTheDocument());
     expect(screen.getByText("Full itinerary")).toBeInTheDocument();
   });
 });
@@ -68,9 +64,7 @@ describe("TripPlanner — judge error", () => {
     });
     fireEvent.submit(screen.getByRole("button", { name: /Generate/i }).closest("form")!);
 
-    await waitFor(() =>
-      expect(screen.getByText(/Evaluation failed/i)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText(/Evaluation failed/i)).toBeInTheDocument());
   });
 });
 
@@ -140,9 +134,7 @@ describe("TripPlanner — load trip event", () => {
     });
 
     // Loaded trips are already saved — show Saved! not Save trip
-    await waitFor(() =>
-      expect(screen.getByText("Saved!")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText("Saved!")).toBeInTheDocument());
     expect(screen.getByText("Full itinerary")).toBeInTheDocument();
   });
 });

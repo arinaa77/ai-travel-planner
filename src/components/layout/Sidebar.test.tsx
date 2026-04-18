@@ -42,17 +42,13 @@ describe("Sidebar", () => {
 
   it("shows 'No trips yet' when API returns empty list", async () => {
     render(<Sidebar />);
-    await waitFor(() =>
-      expect(screen.getByText(/no trips yet/i)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText(/no trips yet/i)).toBeInTheDocument());
   });
 
   it("shows sign in prompt when unauthenticated", async () => {
     mockFetchUnauthed();
     render(<Sidebar />);
-    await waitFor(() =>
-      expect(screen.getByText(/sign in to see your trips/i)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText(/sign in to see your trips/i)).toBeInTheDocument());
   });
 
   it("renders trip destinations from API", async () => {
@@ -68,32 +64,24 @@ describe("Sidebar", () => {
   it("shows trip duration alongside destination", async () => {
     mockFetch([{ id: "1", destination: "Tokyo", days: 5, score: 88 }]);
     render(<Sidebar />);
-    await waitFor(() =>
-      expect(screen.getByText(/Tokyo · 5d/)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText(/Tokyo · 5d/)).toBeInTheDocument());
   });
 
   it("does not show 'No trips yet' when trips exist", async () => {
     mockFetch([{ id: "1", destination: "Tokyo", days: 5, score: 88 }]);
     render(<Sidebar />);
-    await waitFor(() =>
-      expect(screen.queryByText(/no trips yet/i)).not.toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.queryByText(/no trips yet/i)).not.toBeInTheDocument());
   });
 
   it("updates when tripmind_trips_updated event fires", async () => {
     render(<Sidebar />);
-    await waitFor(() =>
-      expect(screen.getByText(/no trips yet/i)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText(/no trips yet/i)).toBeInTheDocument());
 
     mockFetch([{ id: "1", destination: "Berlin", days: 4, score: 80 }]);
     await act(async () => {
       window.dispatchEvent(new Event("tripmind_trips_updated"));
     });
 
-    await waitFor(() =>
-      expect(screen.getByText(/Berlin/)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText(/Berlin/)).toBeInTheDocument());
   });
 });

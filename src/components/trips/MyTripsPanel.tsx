@@ -91,12 +91,8 @@ export default function MyTripsPanel({ onClose }: MyTripsPanelProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4">
-          {loading && (
-            <p className="text-sm text-gray-400 animate-pulse px-2 pt-2">Loading…</p>
-          )}
-          {error && (
-            <p className="text-sm text-red-400 px-2 pt-2">{error}</p>
-          )}
+          {loading && <p className="text-sm text-gray-400 animate-pulse px-2 pt-2">Loading…</p>}
+          {error && <p className="text-sm text-red-400 px-2 pt-2">{error}</p>}
           {!loading && !error && trips.length === 0 && (
             <p className="text-sm text-gray-300 px-2 pt-2">No saved trips yet.</p>
           )}

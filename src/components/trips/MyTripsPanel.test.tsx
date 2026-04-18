@@ -89,9 +89,7 @@ describe("MyTripsPanel — load and delete", () => {
       }),
       { status: 200 }
     );
-    vi.spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(listRes)
-      .mockResolvedValueOnce(tripRes);
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(listRes).mockResolvedValueOnce(tripRes);
 
     const handler = vi.fn();
     window.addEventListener("tripmind_load_trip", handler);
@@ -109,9 +107,7 @@ describe("MyTripsPanel — load and delete", () => {
   it("removes trip from list after delete", async () => {
     const listRes = new Response(JSON.stringify({ trips: MOCK_DB_TRIPS }), { status: 200 });
     const deleteRes = new Response(JSON.stringify({ ok: true }), { status: 200 });
-    vi.spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(listRes)
-      .mockResolvedValueOnce(deleteRes);
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(listRes).mockResolvedValueOnce(deleteRes);
 
     render(<MyTripsPanel onClose={vi.fn()} />);
     await screen.findByText("Tokyo");
