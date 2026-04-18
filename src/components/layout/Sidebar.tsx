@@ -40,6 +40,7 @@ async function fetchRecentTrips(): Promise<TripState> {
 
 export default function Sidebar() {
   const [state, setState] = useState<TripState>({ status: "unauthenticated" });
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchRecentTrips().then(setState);
@@ -47,6 +48,23 @@ export default function Sidebar() {
     window.addEventListener("tripmind_trips_updated", handler);
     return () => window.removeEventListener("tripmind_trips_updated", handler);
   }, []);
+
+  async function handleLoad(id: string) {
+    setLoadingId(id);
+    try {
+      const res = await fetch(`/api/trips/${id}`);
+      const data = await res.json();
+      if (!res.ok || data.error) return;
+      const { itinerary, agent_outputs, evaluation } = data.trip;
+      window.dispatchEvent(
+        new CustomEvent("tripmind_load_trip", {
+          detail: { id, itinerary, agentOutputs: agent_outputs, evaluation },
+        })
+      );
+    } finally {
+      setLoadingId(null);
+    }
+  }
 
   return (
     <aside className="w-64 bg-white border-r border-gray-100 flex flex-col shrink-0">
@@ -66,7 +84,9 @@ export default function Sidebar() {
                 return (
                   <button
                     key={trip.id}
-                    className={`flex flex-col gap-1 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left w-full ${
+                    onClick={() => handleLoad(trip.id)}
+                    disabled={loadingId === trip.id}
+                    className={`flex flex-col gap-1 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left w-full disabled:opacity-50 ${
                       i === 0 ? "bg-violet-50 text-violet-600" : "text-gray-500 hover:bg-gray-50"
                     }`}
                   >
@@ -74,7 +94,7 @@ export default function Sidebar() {
                       <span
                         className={`w-2.5 h-2.5 rounded-full shrink-0 ${DOT_CLASSES[i % DOT_CLASSES.length]}`}
                       />
-                      {trip.destination} · {trip.days}d
+                      {loadingId === trip.id ? "Loading…" : `${trip.destination} · ${trip.days}d`}
                     </div>
                     {tag && (
                       <span
