@@ -24,6 +24,7 @@ export default function TripPlanner() {
   const [saving, setSaving] = useState(false);
   const [savedTripId, setSavedTripId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isViewing, setIsViewing] = useState(false);
 
   useEffect(() => {
     function handleReset() {
@@ -34,6 +35,7 @@ export default function TripPlanner() {
       setJudging(false);
       setSavedTripId(null);
       setError(null);
+      setIsViewing(false);
     }
 
     function handleLoad(e: Event) {
@@ -42,6 +44,7 @@ export default function TripPlanner() {
       setAgentOutputs(a);
       setEvaluation(ev);
       setSavedTripId(id ?? "loaded");
+      setIsViewing(true);
     }
 
     window.addEventListener("tripmind_new_trip", handleReset);
@@ -134,12 +137,15 @@ export default function TripPlanner() {
 
   return (
     <div className="max-w-5xl mx-auto pt-10 px-4">
-      <h1 className="text-3xl font-black text-gray-800 mb-1">Plan a new trip</h1>
-      <p className="text-gray-400 font-medium mb-8">
-        Our AI agents will build your itinerary in seconds.
-      </p>
-
-      <TripInputForm onGenerate={handleGenerate} disabled={generating || judging} />
+      {!isViewing && (
+        <>
+          <h1 className="text-3xl font-black text-gray-800 mb-1">Plan a new trip</h1>
+          <p className="text-gray-400 font-medium mb-8">
+            Our AI agents will build your itinerary in seconds.
+          </p>
+          <TripInputForm onGenerate={handleGenerate} disabled={generating || judging} />
+        </>
+      )}
 
       {generating && (
         <div className="mt-10 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
