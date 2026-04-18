@@ -24,6 +24,8 @@ Trip data is isolated per user via Supabase Row Level Security — authenticated
 - **LLM-as-judge**: multi-dimensional scoring (cost accuracy, diversity, feasibility) with reasoning text
 - **Authentication**: email sign-up and sign-in via Supabase Auth
 - **Trip history**: save, view, and re-open past itineraries per user (max 5, synced to Supabase)
+- **Copy itinerary**: one-click copy of the full day-by-day plan as formatted text to clipboard
+- **Trip quality tags**: sidebar labels trips as "Top rated" or "Recommended" based on judge score
 
 ---
 
