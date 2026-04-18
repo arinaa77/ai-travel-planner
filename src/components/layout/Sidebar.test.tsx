@@ -84,4 +84,24 @@ describe("Sidebar", () => {
 
     await waitFor(() => expect(screen.getByText(/Berlin/)).toBeInTheDocument());
   });
+
+  it("shows Top rated tag for score >= 85", async () => {
+    mockFetch([{ id: "1", destination: "Tokyo", days: 5, score: 90 }]);
+    render(<Sidebar />);
+    await waitFor(() => expect(screen.getByText("Top rated")).toBeInTheDocument());
+  });
+
+  it("shows Recommended tag for score >= 70 and < 85", async () => {
+    mockFetch([{ id: "1", destination: "Paris", days: 3, score: 75 }]);
+    render(<Sidebar />);
+    await waitFor(() => expect(screen.getByText("Recommended")).toBeInTheDocument());
+  });
+
+  it("shows no tag for score below 70", async () => {
+    mockFetch([{ id: "1", destination: "Lima", days: 4, score: 60 }]);
+    render(<Sidebar />);
+    await waitFor(() => expect(screen.getByText(/Lima/)).toBeInTheDocument());
+    expect(screen.queryByText("Top rated")).not.toBeInTheDocument();
+    expect(screen.queryByText("Recommended")).not.toBeInTheDocument();
+  });
 });
