@@ -19,6 +19,17 @@ interface RecentTrip {
 
 type TripState = { status: "unauthenticated" } | { status: "loaded"; trips: RecentTrip[] };
 
+interface TripTag {
+  label: string;
+  className: string;
+}
+
+function getTripTag(score: number): TripTag | null {
+  if (score >= 85) return { label: "Top rated", className: "text-violet-500 bg-violet-50" };
+  if (score >= 70) return { label: "Recommended", className: "text-emerald-600 bg-emerald-50" };
+  return null;
+}
+
 async function fetchRecentTrips(): Promise<TripState> {
   const res = await fetch("/api/trips?limit=5");
   if (res.status === 401) return { status: "unauthenticated" };
@@ -50,19 +61,31 @@ export default function Sidebar() {
             <p className="text-xs text-gray-300 px-3">No trips yet</p>
           ) : (
             <div className="flex flex-col gap-1">
-              {state.trips.map((trip: RecentTrip, i: number) => (
-                <button
-                  key={trip.id}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left w-full ${
-                    i === 0 ? "bg-violet-50 text-violet-600" : "text-gray-500 hover:bg-gray-50"
-                  }`}
-                >
-                  <span
-                    className={`w-2.5 h-2.5 rounded-full shrink-0 ${DOT_CLASSES[i % DOT_CLASSES.length]}`}
-                  />
-                  {trip.destination} · {trip.days}d
-                </button>
-              ))}
+              {state.trips.map((trip: RecentTrip, i: number) => {
+                const tag = getTripTag(trip.score);
+                return (
+                  <button
+                    key={trip.id}
+                    className={`flex flex-col gap-1 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left w-full ${
+                      i === 0 ? "bg-violet-50 text-violet-600" : "text-gray-500 hover:bg-gray-50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`w-2.5 h-2.5 rounded-full shrink-0 ${DOT_CLASSES[i % DOT_CLASSES.length]}`}
+                      />
+                      {trip.destination} · {trip.days}d
+                    </div>
+                    {tag && (
+                      <span
+                        className={`ml-5 text-xs font-semibold px-1.5 py-0.5 rounded-md w-fit ${tag.className}`}
+                      >
+                        {tag.label}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
