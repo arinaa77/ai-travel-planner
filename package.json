@@ -10,7 +10,8 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
@@ -33,7 +34,9 @@
     "@vitest/coverage-v8": "^4.1.4",
     "eslint": "^9",
     "eslint-config-next": "^15.5.14",
+    "eslint-config-prettier": "^10.1.8",
     "jsdom": "^29.0.0",
+    "prettier": "^3.8.3",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.0"
