@@ -1,5 +1,44 @@
 import { AgentOutput, AgentStatus } from "@/lib/mockData";
 
+// ─── Budget chart ──────────────────────────────────────────────────────────────
+
+function parseCost(value: string): number | null {
+  const clean = value.replace(/[~$,]/g, "").trim();
+  const range = clean.match(/^(\d+(?:\.\d+)?)[–\-](\d+(?:\.\d+)?)$/);
+  if (range) return (parseFloat(range[1]) + parseFloat(range[2])) / 2;
+  const num = parseFloat(clean);
+  return isNaN(num) ? null : num;
+}
+
+function BudgetChart({ items }: { items: { label: string; value: string }[] }) {
+  // Exclude the last "Total" row from the chart bars
+  const rows = items.slice(0, -1);
+  const values = rows.map((item) => parseCost(item.value) ?? 0);
+  const max = Math.max(...values, 1);
+
+  return (
+    <div className="px-5 pt-3 pb-1 flex flex-col gap-2">
+      {rows.map((item, i) => {
+        const pct = Math.round((values[i] / max) * 100);
+        return (
+          <div key={i} className="flex items-center gap-2">
+            <span className="text-xs text-gray-400 w-24 shrink-0 truncate">{item.label}</span>
+            <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-violet-400 rounded-full transition-all duration-500"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <span className="text-xs font-medium text-violet-600 w-10 text-right shrink-0">
+              {item.value}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ─── Accent config ─────────────────────────────────────────────────────────────
 
 interface AccentConfig {
@@ -61,6 +100,11 @@ function AgentCard({ agent }: { agent: AgentOutput }) {
         <StatusBadge status={agent.status} />
       </div>
 
+      {/* Budget bar chart */}
+      {agent.id === "budget" && agent.status === "done" && agent.items.length > 1 && (
+        <BudgetChart items={agent.items} />
+      )}
+
       {/* Item list */}
       <div className="px-5 pb-4 border-t border-gray-100">
         {isError ? (
@@ -79,8 +123,8 @@ function AgentCard({ agent }: { agent: AgentOutput }) {
           <p className="py-3 text-sm text-gray-400">No recommendations available.</p>
         ) : (
           <ul className="divide-y divide-gray-100">
-            {agent.items.map((item, i) => {
-              const isLast = i === agent.items.length - 1;
+            {(agent.id === "budget" ? agent.items.slice(-1) : agent.items).map((item, i, arr) => {
+              const isLast = i === arr.length - 1;
               const highlight = isLast && agent.id === "budget";
               return (
                 <li key={i} className="flex items-baseline justify-between gap-4 py-2.5">
