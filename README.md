@@ -6,6 +6,17 @@ Generates personalized travel itineraries using Claude. A single AI call produce
 
 ---
 
+## User Roles
+
+| Role | How to access | Capabilities |
+|---|---|---|
+| **Guest** | No sign-in required | Generate itineraries, view results, LLM-as-judge scores |
+| **Authenticated User** | Sign up / sign in via email | Everything above + save trips, view history, delete trips |
+
+Trip data is isolated per user via Supabase Row Level Security — authenticated users can only access their own saved trips.
+
+---
+
 ## Features
 
 - **AI itinerary generation**: single Claude call produces a full day-by-day plan with budget, attractions, and food breakdowns
@@ -33,6 +44,49 @@ Generates personalized travel itineraries using Claude. A single AI call produce
 ---
 
 ## Architecture Diagram
+
+```mermaid
+flowchart TD
+    subgraph Client
+        UI[TripPlanner.tsx]
+        Sidebar[Sidebar.tsx]
+        Auth[AuthModal.tsx]
+    end
+
+    subgraph "Next.js API Routes"
+        GEN["api/generate"]
+        JUDGE["api/judge"]
+        TRIPS["api/trips"]
+        AUTHAPI["api/auth"]
+    end
+
+    subgraph "AI Layer"
+        CLAUDE["Claude claude-sonnet-4-5 — tool_use structured output"]
+        JUDGEAI["Claude LLM-as-judge — cost, diversity, feasibility"]
+    end
+
+    subgraph "Supabase"
+        DB[("PostgreSQL — RLS enforced")]
+        SUPAAUTH[Supabase Auth]
+    end
+
+    UI -->|destination, days, budget| GEN
+    GEN -->|tool_use| CLAUDE
+    CLAUDE -->|ItineraryDay + agentOutputs| GEN
+    GEN -->|itinerary + breakdowns| UI
+
+    UI -->|itinerary| JUDGE
+    JUDGE -->|score prompt| JUDGEAI
+    JUDGEAI -->|scores + reasoning| JUDGE
+    JUDGE -->|JudgeResult| UI
+
+    UI -->|save trip| TRIPS
+    Sidebar -->|list recent trips| TRIPS
+    TRIPS <-->|RLS-scoped queries| DB
+
+    Auth -->|sign in / sign up| AUTHAPI
+    AUTHAPI <--> SUPAAUTH
+```
 
 ![Architecture](docs/architecture.svg)
 
