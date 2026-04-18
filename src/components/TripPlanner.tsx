@@ -25,6 +25,7 @@ export default function TripPlanner() {
   const [savedTripId, setSavedTripId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isViewing, setIsViewing] = useState(false);
+  const [viewingTrip, setViewingTrip] = useState<{ destination: string; days: number } | null>(null);
 
   useEffect(() => {
     function handleReset() {
@@ -36,15 +37,17 @@ export default function TripPlanner() {
       setSavedTripId(null);
       setError(null);
       setIsViewing(false);
+      setViewingTrip(null);
     }
 
     function handleLoad(e: Event) {
-      const { id, itinerary: i, agentOutputs: a, evaluation: ev } = (e as CustomEvent).detail;
+      const { id, itinerary: i, agentOutputs: a, evaluation: ev, destination, days } = (e as CustomEvent).detail;
       setItinerary(i);
       setAgentOutputs(a);
       setEvaluation(ev);
       setSavedTripId(id ?? "loaded");
       setIsViewing(true);
+      setViewingTrip(destination ? { destination, days } : null);
     }
 
     window.addEventListener("tripmind_new_trip", handleReset);
@@ -137,7 +140,12 @@ export default function TripPlanner() {
 
   return (
     <div className="max-w-5xl mx-auto pt-10 px-4">
-      {!isViewing && (
+      {isViewing && viewingTrip ? (
+        <div className="mb-8">
+          <h1 className="text-3xl font-black text-gray-800 mb-1">{viewingTrip.destination}</h1>
+          <p className="text-gray-400 font-medium">{viewingTrip.days}-day itinerary</p>
+        </div>
+      ) : (
         <>
           <h1 className="text-3xl font-black text-gray-800 mb-1">Plan a new trip</h1>
           <p className="text-gray-400 font-medium mb-8">

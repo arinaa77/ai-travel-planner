@@ -49,16 +49,23 @@ export default function Sidebar() {
     return () => window.removeEventListener("tripmind_trips_updated", handler);
   }, []);
 
-  async function handleLoad(id: string) {
-    setLoadingId(id);
+  async function handleLoad(trip: RecentTrip) {
+    setLoadingId(trip.id);
     try {
-      const res = await fetch(`/api/trips/${id}`);
+      const res = await fetch(`/api/trips/${trip.id}`);
       const data = await res.json();
       if (!res.ok || data.error) return;
       const { itinerary, agent_outputs, evaluation } = data.trip;
       window.dispatchEvent(
         new CustomEvent("tripmind_load_trip", {
-          detail: { id, itinerary, agentOutputs: agent_outputs, evaluation },
+          detail: {
+            id: trip.id,
+            itinerary,
+            agentOutputs: agent_outputs,
+            evaluation,
+            destination: trip.destination,
+            days: trip.days,
+          },
         })
       );
     } finally {
@@ -84,7 +91,7 @@ export default function Sidebar() {
                 return (
                   <button
                     key={trip.id}
-                    onClick={() => handleLoad(trip.id)}
+                    onClick={() => handleLoad(trip)}
                     disabled={loadingId === trip.id}
                     className={`flex flex-col gap-1 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left w-full disabled:opacity-50 ${
                       i === 0 ? "bg-violet-50 text-violet-600" : "text-gray-500 hover:bg-gray-50"
