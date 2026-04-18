@@ -16,7 +16,10 @@ function formatItineraryAsText(days: ItineraryDay[]): string {
   return days
     .map((day) => {
       const events = day.events
-        .map((e) => `  ${e.time}  ${e.title} — ${e.subtitle} (${e.cost === null ? "Free" : `$${e.cost}`})`)
+        .map(
+          (e) =>
+            `  ${e.time}  ${e.title} — ${e.subtitle} (${e.cost === null ? "Free" : `$${e.cost}`})`
+        )
         .join("\n");
       return `Day ${day.day}: ${day.title}\n${events}`;
     })
