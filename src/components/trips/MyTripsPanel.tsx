@@ -138,7 +138,7 @@ export default function MyTripsPanel({ onClose }: MyTripsPanelProps) {
                     {confirmingId === trip.id ? (
                       <div className="flex flex-col gap-3">
                         <p className="text-sm font-semibold text-gray-700">Delete this trip?</p>
-                        <p className="text-xs text-gray-400">This can't be undone.</p>
+                        <p className="text-xs text-gray-400">This cannot be undone.</p>
                         <div className="flex gap-2">
                           <button
                             onClick={(e) => handleDeleteConfirm(e, trip.id)}
