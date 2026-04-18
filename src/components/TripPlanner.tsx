@@ -25,7 +25,9 @@ export default function TripPlanner() {
   const [savedTripId, setSavedTripId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isViewing, setIsViewing] = useState(false);
-  const [viewingTrip, setViewingTrip] = useState<{ destination: string; days: number } | null>(null);
+  const [viewingTrip, setViewingTrip] = useState<{ destination: string; days: number } | null>(
+    null
+  );
 
   useEffect(() => {
     function handleReset() {
@@ -41,7 +43,14 @@ export default function TripPlanner() {
     }
 
     function handleLoad(e: Event) {
-      const { id, itinerary: i, agentOutputs: a, evaluation: ev, destination, days } = (e as CustomEvent).detail;
+      const {
+        id,
+        itinerary: i,
+        agentOutputs: a,
+        evaluation: ev,
+        destination,
+        days,
+      } = (e as CustomEvent).detail;
       setItinerary(i);
       setAgentOutputs(a);
       setEvaluation(ev);

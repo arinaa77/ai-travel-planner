@@ -118,12 +118,12 @@ export default function MyTripsPanel({ onClose }: MyTripsPanelProps) {
 
         {/* body */}
         <div className="p-8 max-h-[60vh] overflow-y-auto">
-          {loading && (
-            <p className="text-sm text-gray-400 animate-pulse">Loading…</p>
-          )}
+          {loading && <p className="text-sm text-gray-400 animate-pulse">Loading…</p>}
           {error && <p className="text-sm text-red-400">{error}</p>}
           {!loading && !error && trips.length === 0 && (
-            <p className="text-sm text-gray-300">No saved trips yet. Generate one to get started!</p>
+            <p className="text-sm text-gray-300">
+              No saved trips yet. Generate one to get started!
+            </p>
           )}
           {!loading && !error && trips.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -175,7 +175,9 @@ export default function MyTripsPanel({ onClose }: MyTripsPanelProps) {
                             Score {trip.score}
                           </span>
                           {tag && (
-                            <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-md ${tag.className}`}>
+                            <span
+                              className={`text-xs font-semibold px-1.5 py-0.5 rounded-md ${tag.className}`}
+                            >
                               {tag.label}
                             </span>
                           )}

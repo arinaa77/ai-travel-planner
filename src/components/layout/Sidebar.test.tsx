@@ -110,9 +110,18 @@ describe("Sidebar", () => {
 
     vi.stubGlobal(
       "fetch",
-      vi.fn()
-        .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ trips: [{ id: "1", destination: "Tokyo", days: 5, score: 88 }] }) })
-        .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ trip: { itinerary: [], agent_outputs: [], evaluation: {} } }) })
+      vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({ trips: [{ id: "1", destination: "Tokyo", days: 5, score: 88 }] }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({ trip: { itinerary: [], agent_outputs: [], evaluation: {} } }),
+        })
     );
 
     const handler = vi.fn();
@@ -120,7 +129,9 @@ describe("Sidebar", () => {
 
     render(<Sidebar />);
     const btn = await screen.findByText(/Tokyo/);
-    await act(async () => { btn.click(); });
+    await act(async () => {
+      btn.click();
+    });
 
     await waitFor(() => expect(handler).toHaveBeenCalledOnce());
     window.removeEventListener("tripmind_load_trip", handler);
@@ -128,20 +139,33 @@ describe("Sidebar", () => {
 
   it("shows Loading… while trip is being fetched", async () => {
     let resolveFetch!: (v: unknown) => void;
-    const tripPromise = new Promise((r) => { resolveFetch = r; });
+    const tripPromise = new Promise((r) => {
+      resolveFetch = r;
+    });
 
     vi.stubGlobal(
       "fetch",
-      vi.fn()
-        .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ trips: [{ id: "1", destination: "Tokyo", days: 5, score: 88 }] }) })
+      vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({ trips: [{ id: "1", destination: "Tokyo", days: 5, score: 88 }] }),
+        })
         .mockReturnValueOnce(tripPromise)
     );
 
     render(<Sidebar />);
     const btn = await screen.findByText(/Tokyo/);
-    act(() => { btn.click(); });
+    act(() => {
+      btn.click();
+    });
 
     await waitFor(() => expect(screen.getByText("Loading…")).toBeInTheDocument());
-    resolveFetch({ ok: true, status: 200, json: async () => ({ trip: { itinerary: [], agent_outputs: [], evaluation: {} } }) });
+    resolveFetch({
+      ok: true,
+      status: 200,
+      json: async () => ({ trip: { itinerary: [], agent_outputs: [], evaluation: {} } }),
+    });
   });
 });
