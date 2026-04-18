@@ -19,7 +19,7 @@
 - [ ] `npm run type-check` passes locally
 - [ ] `npm run lint` passes locally
 
-## Security acceptance criteria
+## Definition of Done: Security acceptance criteria
 
 - [ ] No API keys or secrets in client-side code (no `NEXT_PUBLIC_ANTHROPIC_*` or `NEXT_PUBLIC_SUPABASE_SERVICE_*`)
 - [ ] All new API routes validate input with Zod before use
