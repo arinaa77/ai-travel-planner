@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { User } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 import TripInputForm, { TripFormValues } from "@/components/layout/TripInputForm";
 import AgentDebatePanel from "@/components/debate/AgentDebatePanel";
 import JudgeScoreCard from "@/components/judge/JudgeScoreCard";
@@ -28,6 +30,16 @@ export default function TripPlanner() {
   const [viewingTrip, setViewingTrip] = useState<{ destination: string; days: number } | null>(
     null
   );
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     function handleReset() {
@@ -195,19 +207,21 @@ export default function TripPlanner() {
       {evaluation && (
         <div className="mt-6">
           <JudgeScoreCard evaluation={evaluation} />
-          <div className="mt-4 flex justify-end">
-            {savedTripId ? (
-              <span className="text-sm font-semibold text-emerald-500">Saved!</span>
-            ) : (
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="px-5 py-2 text-sm font-bold rounded-full text-white bg-gradient-to-r from-violet-500 to-pink-500 hover:opacity-90 transition-all shadow-sm disabled:opacity-60"
-              >
-                {saving ? "Saving…" : "Save trip"}
-              </button>
-            )}
-          </div>
+          {user && (
+            <div className="mt-4 flex justify-end">
+              {savedTripId ? (
+                <span className="text-sm font-semibold text-emerald-500">Saved!</span>
+              ) : (
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="px-5 py-2 text-sm font-bold rounded-full text-white bg-gradient-to-r from-violet-500 to-pink-500 hover:opacity-90 transition-all shadow-sm disabled:opacity-60"
+                >
+                  {saving ? "Saving…" : "Save trip"}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 
