@@ -25,7 +25,17 @@ Trip data is isolated per user via Supabase Row Level Security — authenticated
 - **Authentication**: email sign-up and sign-in via Supabase Auth
 - **Trip history**: save, view, and re-open past itineraries per user (max 5, synced to Supabase)
 - **Copy itinerary**: one-click copy of the full day-by-day plan as formatted text to clipboard
-- **Trip quality tags**: sidebar labels trips as "Top rated" or "Recommended" based on judge score
+- **Trip quality tags**: sidebar labels trips based on judge score (see thresholds below)
+
+### Trip Quality Tags
+
+| Tag | Score threshold |
+|---|---|
+| **Top rated** | ≥ 85 |
+| **Recommended** | ≥ 70 |
+| *(no tag)* | < 70 |
+
+Scores are assigned by the LLM-as-judge across cost accuracy, diversity, and feasibility.
 
 ---
 
