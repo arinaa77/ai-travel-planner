@@ -19,9 +19,9 @@ describe("ItineraryTimeline — structure", () => {
     expect(screen.getByText("Full itinerary")).toBeInTheDocument();
   });
 
-  it("renders Remix a day and Copy itinerary buttons", () => {
+  it("renders Copy itinerary button", () => {
     render(<ItineraryTimeline days={MOCK_ITINERARY} />);
-    expect(screen.getByText("Remix a day")).toBeInTheDocument();
+    expect(screen.queryByText("Remix a day")).not.toBeInTheDocument();
     expect(screen.getByText("Copy itinerary")).toBeInTheDocument();
   });
 

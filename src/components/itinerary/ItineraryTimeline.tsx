@@ -87,9 +87,6 @@ export default function ItineraryTimeline({ days }: Props) {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-sm font-semibold text-gray-800">Full itinerary</h2>
         <div className="flex gap-2">
-          <button className="px-3 py-1.5 text-xs font-semibold border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 transition-colors">
-            Remix a day
-          </button>
           <button
             onClick={handleCopy}
             className="px-3 py-1.5 text-xs font-semibold border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 transition-colors"
