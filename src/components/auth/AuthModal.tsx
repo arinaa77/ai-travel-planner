@@ -51,7 +51,7 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
           {mode === "signin" ? "Sign in" : "Create account"}
         </h2>
         <p className="text-sm text-gray-500 mb-6">
-          {mode === "signin" ? "Welcome back to TripAgent" : "Start planning with TripAgent"}
+          {mode === "signin" ? "Welcome back to TripMind" : "Start planning with TripMind"}
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">

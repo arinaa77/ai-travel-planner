@@ -43,9 +43,9 @@ describe("Topbar — logged out", () => {
     expect(screen.queryByText("Sign out")).not.toBeInTheDocument();
   });
 
-  it("shows TripAgent brand name", async () => {
+  it("shows TripMind brand name", async () => {
     render(<Topbar />);
-    expect(await screen.findByText("TripAgent")).toBeInTheDocument();
+    expect(await screen.findByText("TripMind")).toBeInTheDocument();
   });
 
   it("opens auth modal on Sign in click", async () => {

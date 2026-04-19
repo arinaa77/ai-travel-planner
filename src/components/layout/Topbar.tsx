@@ -35,7 +35,7 @@ export default function Topbar() {
       <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 shrink-0">
         <div className="text-2xl font-black tracking-tight">
           <span className="bg-gradient-to-r from-violet-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
-            TripAgent
+            TripMind
           </span>
         </div>
 
