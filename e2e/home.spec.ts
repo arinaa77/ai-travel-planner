@@ -6,10 +6,10 @@ async function waitForPageReady(page: import("@playwright/test").Page) {
 }
 
 test.describe("Homepage", () => {
-  test("shows the TripAgent brand in the topbar", async ({ page }) => {
+  test("shows the TripMind brand in the topbar", async ({ page }) => {
     await page.goto("/");
     await waitForPageReady(page);
-    await expect(page.getByText("TripAgent")).toBeVisible();
+    await expect(page.getByText("TripMind")).toBeVisible();
   });
 
   test("shows the trip input form with all fields", async ({ page }) => {
